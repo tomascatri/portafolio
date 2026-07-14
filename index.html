@@ -11,7 +11,7 @@
 
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Tomás Catrileo — Portafolio" />
+<meta property="og:title" content="Tomás Catrileo — Portafolio Animado" />
 <meta property="og:description" content="Diseñador gráfico y explorador tecnológico. Branding, visualización de datos, electrónica e instalaciones interactivas." />
 <meta property="og:image" content="images/og-cover.jpg" />
 <meta property="og:url" content="https://graphic-pan.com" />
@@ -406,6 +406,37 @@ section{
   animation: letterThud 0.22s ease-out both;
 }
 
+/* ---------- Temblor de TODO EL SITIO al caer cada letra ---------- */
+@keyframes siteThud{
+  0%{ transform:translate(0,0) rotate(0deg); }
+  25%{ transform:translate(-5px,3px) rotate(-0.15deg); }
+  50%{ transform:translate(4px,-4px) rotate(0.15deg); }
+  75%{ transform:translate(-2px,2px) rotate(-0.05deg); }
+  100%{ transform:translate(0,0) rotate(0deg); }
+}
+@keyframes siteImpact{
+  0%{ transform:translate(0,0) rotate(0deg); }
+  8%{ transform:translate(-5px,6px) rotate(-0.35deg); }
+  16%{ transform:translate(6px,-5px) rotate(0.4deg); }
+  24%{ transform:translate(-7px,4px) rotate(-0.45deg); }
+  34%{ transform:translate(7px,-3px) rotate(0.35deg); }
+  44%{ transform:translate(-6px,3px) rotate(-0.28deg); }
+  55%{ transform:translate(5px,-2px) rotate(0.2deg); }
+  66%{ transform:translate(-4px,2px) rotate(-0.14deg); }
+  78%{ transform:translate(3px,-1px) rotate(0.08deg); }
+  90%{ transform:translate(-1px,1px) rotate(0deg); }
+  100%{ transform:translate(0,0) rotate(0deg); }
+}
+body.site-thud{
+  animation: siteThud 0.24s ease-out both;
+}
+body.site-impact{
+  animation: siteImpact 0.65s cubic-bezier(.36,.07,.19,.97) both;
+}
+@media (prefers-reduced-motion: reduce){
+  body.site-thud, body.site-impact{ animation: none !important; }
+}
+
 .hero-sub{
   max-width:680px;
   padding-bottom:80px;
@@ -771,6 +802,347 @@ section{
   text-transform: uppercase;
 }
 
+/* ---------- Sistema de Plantillas Editoriales Dinámicas ---------- */
+.ed-flow{
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 60px var(--gutter) 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 90px;
+}
+.ed-meta-row{
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+}
+.ed-tag{
+  font-family: var(--font-pixel);
+  border: 1px solid var(--color-border);
+  padding: 6px 14px;
+  font-size: 15px;
+}
+.ed-body{
+  font-family: 'Space Mono', monospace;
+  color: #d4d4d4;
+  font-size: 17px;
+  line-height: 1.75;
+}
+.ed-body.lead{
+  font-size: 19px;
+  color: #f0f0f0;
+}
+.ed-label{
+  font-family: var(--font-pixel);
+  font-size: var(--title-2);
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.ed-kicker{
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  display:block;
+  margin-bottom: 10px;
+}
+
+/* Marco de medios reutilizable, ahora interactivo con zoom */
+.ed-media{
+  position: relative;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 14px),
+    #111;
+  border: 1px solid var(--color-border);
+  cursor: zoom-in !important;
+  opacity: 0;
+  transform: translateY(40px) scale(0.98);
+  transition: opacity 0.7s cubic-bezier(.16,1,.3,1), transform 0.7s cubic-bezier(.16,1,.3,1), border-color 0.3s ease;
+}
+.ed-media.in-view{ opacity:1; transform: translateY(0) scale(1); }
+.ed-media video{ cursor: default !important; }
+.ed-media img, .ed-media video{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition: transform 0.6s cubic-bezier(.16,1,.3,1), filter 0.4s ease;
+}
+.ed-media:hover img{ transform: scale(1.06); filter: brightness(1.08); }
+.ed-media:hover{ border-color: var(--m-color, #fff); }
+.ed-media::after{
+  content:'＋';
+  position:absolute; top:12px; right:12px;
+  width:34px; height:34px;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(8,8,8,0.7);
+  border: 1px solid var(--color-border);
+  font-size: 18px;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+.ed-media:hover::after{ opacity: 1; transform: scale(1); }
+.ed-media.img-missing::before, .ed-media.video-missing::before{
+  content: attr(data-label);
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  color: var(--color-muted);
+  text-align: center;
+  padding: 0 12px;
+  line-height: 1.4;
+}
+
+/* --- Variante 1: Revista clásica, filas alternadas --- */
+.ed-v1-hero{ aspect-ratio: 21/9; }
+.ed-v1-row{
+  display:grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 60px;
+  align-items:center;
+}
+.ed-v1-row.rev{ direction: rtl; }
+.ed-v1-row.rev > *{ direction: ltr; }
+.ed-v1-row .ed-media{ aspect-ratio: 4/3; }
+@media (max-width: 900px){
+  .ed-v1-row{ grid-template-columns: 1fr; direction: ltr !important; }
+}
+
+/* --- Variante 2: Bento asimétrico --- */
+.ed-v2-bento{
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 110px;
+  gap: 16px;
+}
+.ed-v2-bento .ed-media:nth-child(1){ grid-column: 1 / 5; grid-row: 1 / 5; }
+.ed-v2-bento .ed-media:nth-child(2){ grid-column: 5 / 7; grid-row: 1 / 3; }
+.ed-v2-bento .ed-media:nth-child(3){ grid-column: 5 / 7; grid-row: 3 / 5; }
+.ed-v2-bento .ed-media:nth-child(4){ grid-column: 1 / 7; grid-row: 5 / 8; }
+.ed-v2-text{
+  display:grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 50px;
+}
+@media (max-width: 900px){
+  .ed-v2-bento{ grid-template-columns: repeat(2,1fr); grid-auto-rows: 160px; }
+  .ed-v2-bento .ed-media:nth-child(1){ grid-column: 1/3; grid-row: 1/3; }
+  .ed-v2-bento .ed-media:nth-child(2){ grid-column: 1/2; grid-row: 3/4; }
+  .ed-v2-bento .ed-media:nth-child(3){ grid-column: 2/3; grid-row: 3/4; }
+  .ed-v2-bento .ed-media:nth-child(4){ grid-column: 1/3; grid-row: 4/6; }
+  .ed-v2-text{ grid-template-columns: 1fr; }
+}
+
+/* --- Variante 3: Cinta con superposición --- */
+.ed-v3-full{ aspect-ratio: 21/8; }
+.ed-v3-overlap{
+  display:grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: start;
+}
+.ed-v3-overlap .ed-media{ aspect-ratio: 3/4; margin-top: -80px; }
+.ed-v3-quote{
+  font-family: var(--font-pixel);
+  font-size: clamp(24px, 2.6vw, 38px);
+  line-height: 1.3;
+  border-left: 4px solid var(--m-color, #fff);
+  padding-left: 28px;
+  margin: 0;
+}
+.ed-v3-inset-wrap{ position: relative; }
+.ed-v3-inset{
+  float: right;
+  width: 42%;
+  aspect-ratio: 4/3;
+  margin: 6px 0 16px 28px;
+}
+@media (max-width: 900px){
+  .ed-v3-overlap{ grid-template-columns: 1fr; }
+  .ed-v3-overlap .ed-media{ margin-top: 0; }
+  .ed-v3-inset{ float:none; width:100%; margin: 0 0 20px 0; }
+}
+
+/* --- Variante 4: Columna diario técnico --- */
+.ed-v4-col{
+  max-width: 780px;
+  margin: 0 auto;
+  display:flex;
+  flex-direction: column;
+  gap: 44px;
+}
+.ed-v4-col .ed-media{ aspect-ratio: 16/9; }
+.ed-v4-col .ed-media.tall{ aspect-ratio: 3/4; max-width: 420px; margin: 0 auto; }
+.ed-v4-divider{
+  border: none;
+  border-top: 1px dashed var(--color-border);
+  margin: 0;
+}
+
+.ed-video-full{ aspect-ratio: 21/9; }
+
+/* ---------- Sistema de Media Dinámico (máscara de recorte por orientación) ---------- */
+/* Cada media rellena su "molde" (H/V/C) usando object-fit:cover ya definido arriba */
+.ed-media.o-H{ aspect-ratio: 16/9; }
+.ed-media.o-V{ aspect-ratio: 3/4; }
+.ed-media.o-C{ aspect-ratio: 1/1; }
+
+/* --- Portada / Hero de proyecto --- */
+.ed-hero{
+  position: relative;
+  aspect-ratio: 21/9;
+  min-height: 260px;
+  overflow: hidden;
+  background:#111;
+  border: 1px solid var(--color-border);
+}
+.ed-hero img{ width:100%; height:100%; object-fit:cover; display:block; }
+.ed-hero::after{
+  content:'';
+  position:absolute; inset:0;
+  background: linear-gradient(0deg, rgba(8,8,8,0.75) 0%, rgba(8,8,8,0.05) 45%, transparent 70%);
+}
+.ed-hero-kicker{
+  position:absolute; left:28px; bottom:20px; z-index:2;
+  font-family: var(--font-pixel);
+  font-size: 15px; letter-spacing:2px;
+  padding: 6px 12px;
+  background: rgba(8,8,8,0.7);
+  border: 1px solid var(--m-color, #fff);
+  text-transform: uppercase;
+}
+@media (max-width: 700px){ .ed-hero{ aspect-ratio: 4/3; } }
+
+/* --- Intro editorial: texto + primera imagen --- */
+.ed-intro-row{
+  display:grid;
+  grid-template-columns: 1fr 0.9fr;
+  gap: 60px;
+  align-items:center;
+}
+@media (max-width: 900px){ .ed-intro-row{ grid-template-columns: 1fr; } }
+
+/* --- Mosaico dinámico (bento auto-flow según orientación real de cada archivo) --- */
+.ed-mosaic{
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 90px;
+  grid-auto-flow: dense;
+  gap: 14px;
+}
+.ed-mosaic .ed-media.o-H{ grid-column: span 4; grid-row: span 3; }
+.ed-mosaic .ed-media.o-V{ grid-column: span 2; grid-row: span 5; }
+.ed-mosaic .ed-media.o-C{ grid-column: span 3; grid-row: span 3; }
+@media (max-width: 900px){
+  .ed-mosaic{ grid-template-columns: repeat(4, 1fr); grid-auto-rows: 78px; gap:10px; }
+  .ed-mosaic .ed-media.o-H{ grid-column: span 4; grid-row: span 3; }
+  .ed-mosaic .ed-media.o-V{ grid-column: span 2; grid-row: span 5; }
+  .ed-mosaic .ed-media.o-C{ grid-column: span 2; grid-row: span 3; }
+}
+
+/* --- Video destacado --- */
+.ed-featured-video{ max-width: 900px; margin: 0 auto; width:100%; }
+.ed-featured-video.o-H{ aspect-ratio: 16/9; }
+.ed-featured-video.o-V{ aspect-ratio: 9/16; max-width: 460px; }
+.ed-featured-video.o-C{ aspect-ratio: 1/1; max-width: 640px; }
+
+/* --- Tiras horizontales (filmstrip) para GIFs y Proceso --- */
+.ed-strip-wrap{ display:flex; flex-direction: column; gap: 18px; }
+.ed-strip{
+  display:flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-snap-type: x proximity;
+}
+.ed-strip::-webkit-scrollbar{ height:4px; }
+.ed-strip::-webkit-scrollbar-thumb{ background:#333; }
+.ed-strip .ed-media{
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+.ed-strip .ed-media.o-H{ width: min(60vw, 420px); aspect-ratio:16/9; }
+.ed-strip .ed-media.o-V{ width: min(48vw, 230px); aspect-ratio:3/4; }
+.ed-strip .ed-media.o-C{ width: min(52vw, 260px); aspect-ratio:1/1; }
+.ed-strip-label{
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+.ed-media.is-gif::before{
+  content: 'GIF';
+  position:absolute; top:12px; left:12px; z-index:2;
+  font-family: var(--font-pixel);
+  font-size: 12px; letter-spacing:1px;
+  padding: 3px 8px;
+  background: var(--m-color, #ffdd00);
+  color: #080808;
+}
+
+/* --- Logo destacado (ej: S!REN) --- */
+.ed-logo-block{
+  max-width: 640px;
+  margin: 0 auto;
+}
+.ed-logo-block .ed-media{ aspect-ratio: 3798/1120; background:transparent; border:none; cursor:zoom-in !important; }
+.ed-logo-block .ed-media img{ object-fit: contain; }
+
+/* ---------- Lightbox con Zoom ---------- */
+#lightbox{
+  position: fixed; inset:0; z-index: 3000;
+  background: rgba(4,4,4,0.94);
+  display:none;
+  align-items:center; justify-content:center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#lightbox.open{ display:flex; opacity:1; }
+#lightbox-stage{
+  position: relative;
+  width: 90vw; height: 86vh;
+  display:flex; align-items:center; justify-content:center;
+  overflow: hidden;
+  touch-action: none;
+}
+#lightbox-stage img{
+  max-width: 90vw; max-height: 86vh;
+  width: auto; height: auto;
+  object-fit: contain;
+  cursor: zoom-in;
+  transform-origin: center center;
+  transition: transform 0.25s cubic-bezier(.16,1,.3,1);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+#lightbox-stage img.zoomed{ cursor: grab; transition: none; }
+#lightbox-stage img.zoomed.dragging{ cursor: grabbing; }
+#lightbox-close, #lightbox-zoom-btn{
+  position: absolute;
+  top: 22px;
+  background: rgba(8,8,8,0.7);
+  border: 1px solid var(--color-border);
+  color: #fff;
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  padding: 10px 18px;
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+#lightbox-close{ right: 22px; }
+#lightbox-zoom-btn{ left: 22px; }
+#lightbox-close:hover, #lightbox-zoom-btn:hover{ border-color:#fff; background: rgba(255,255,255,0.1); }
+#lightbox-hint{
+  position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-pixel); font-size: 13px; color: var(--color-muted);
+  letter-spacing: 1px; text-align:center;
+}
+
 /* ---------- Animaciones de Entrada al Scroll ---------- */
 .reveal{
   opacity: 0;
@@ -956,6 +1328,16 @@ section{
   <div id="project-view-content"></div>
 </div>
 
+<!-- Lightbox con zoom real (rueda, arrastre, pinch) -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕ CERRAR</button>
+  <button id="lightbox-zoom-btn" onclick="toggleZoom()">🔍 ZOOM</button>
+  <div id="lightbox-stage">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+  <div id="lightbox-hint">CLICK / DOBLE-CLICK PARA ZOOM · ARRASTRA PARA MOVER · RUEDA PARA ACERCAR</div>
+</div>
+
 <script>
 /* ============ BLOQUEO DE INTERACCIÓN DURANTE LA ENTRADA DEL NOMBRE ============ */
 // Debe coincidir con el aterrizaje de la última letra (delay 0.67s + 58% de su caída de 0.5s).
@@ -993,9 +1375,13 @@ setTimeout(() => {
       const stage = document.querySelector('.hero-name-stage');
       if (!stage) return;
       const cls = isLast ? 'impact' : 'thud';
+      const bodyCls = isLast ? 'site-impact' : 'site-thud';
       stage.classList.remove(cls);
+      document.body.classList.remove(bodyCls);
       void stage.offsetWidth;
       stage.classList.add(cls);
+      document.body.classList.add(bodyCls);
+      setTimeout(() => { document.body.classList.remove(bodyCls); }, isLast ? 700 : 300);
       if (isLast) {
         shakeCooldown = true;
         setTimeout(() => { shakeCooldown = false; }, 900);
@@ -1103,10 +1489,20 @@ function updateCursorListeners() {
 }
 
 /* ============ BASE DE DATOS DE PROYECTOS ============ */
+/* Helper: crea un ítem de media con su archivo y orientación (H=horizontal, V=vertical, C=cuadrado) */
+function M(file, o){ return { file, o }; }
+
 const PROJECTS = [
   {
     id:'croma',
-    image:'https://placehold.co/400x300/121212/00aaff?text=CROMA', 
+    image:'images/proyectos/croma/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[ M('video_C.mp4','C') ],
+      gif:[ M('gif2_V.gif','V'), M('gif0_V.gif','V'), M('gif1_V.gif','V') ],
+      main:[ M('1_C.jpeg','C') ],
+      process:[]
+    },
     title:'CROMA', label:'Instalación Interactiva · 2024',
     color:'#00aaff', dark:'#003a66', tags:['Instalación','Visión por Computador','Data'], year:'2024',
     description:'Instalación interactiva diseñada para registrar los colores dominantes en la vestimenta de los usuarios y revelar patrones emocionales colectivos.',
@@ -1117,7 +1513,14 @@ const PROJECTS = [
   },
   {
     id:'sensonica',
-    image:'https://placehold.co/400x300/121212/00ff88?text=SENSONICA', 
+    image:'images/proyectos/sensonica/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[ M('video-H.mp4','H') ],
+      gif:[ M('gif0_H.gif','H'), M('gif1_V.gif','V') ],
+      main:[ M('1_V.png','V'), M('2_V.jpeg','V') ],
+      process:[ M('p.1_C.png','C'), M('p.2_V.jpeg','V'), M('p.3_V.jpeg','V') ]
+    },
     title:'SENSÓNICA', label:'Cartografía Sonora · 2023',
     color:'#00ff88', dark:'#003d22', tags:['Arte Sonoro','Instalación','Data'], year:'2023',
     description:'Proyecto de investigación que visualiza el impacto físico del paisaje sonoro en el barrio República a través de una cartografía sonora interactiva.',
@@ -1128,7 +1531,19 @@ const PROJECTS = [
   },
   {
     id:'mundo',
-    image:'https://placehold.co/400x300/121212/ff2244?text=MUNDO+DETERIORADO', 
+    image:'images/proyectos/mundo/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[],
+      gif:[],
+      main:[
+        M('1_V.jpg','V'), M('2_C.png','C'), M('3_C.png','C'), M('4_C.png','C'),
+        M('5_V.jpeg','V'), M('6_V.jpeg','V'), M('7_C.png','C'), M('8_C.png','C'),
+        M('9_C.png','C'), M('10_V.jpeg','V'), M('11_V.png','V'), M('12_V.png','V'),
+        M('13_C.png','C')
+      ],
+      process:[]
+    },
     title:'MUNDO DETERIORADO', label:'Editorial · 2023',
     color:'#ff2244', dark:'#5c0015', tags:['Editorial','Sistema Gráfico','Impresión'], year:'2023',
     description:'Sistema gráfico integral diseñado para poetas chilenos, articulado bajo el concepto del deterioro.',
@@ -1139,7 +1554,14 @@ const PROJECTS = [
   },
   {
     id:'archivo',
-    image:'https://placehold.co/400x300/121212/ff8800?text=ARCHIVO+RETRO', 
+    image:'images/proyectos/archivo/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[ M('video_V.mp4','V') ],
+      gif:[ M('gif1_V.gif','V'), M('gif0_V.gif','V') ],
+      main:[ M('4_V.jpeg','V'), M('3_V.jpeg','V'), M('2_H.jpg','H'), M('1_H.png','H') ],
+      process:[]
+    },
     title:'ARCHIVO RETRO', label:'Hardware · 2025',
     color:'#ff8800', dark:'#4a2700', tags:['Electrónica','Fotografía','Firmware'], year:'2025',
     description:'Dispositivo electrónico inalámbrico que fusiona la fotografía digital con la estética de consolas clásicas.',
@@ -1151,7 +1573,15 @@ const PROJECTS = [
   },
   {
     id:'siren',
-    image:'https://placehold.co/400x300/121212/cc00ff?text=S!REN', 
+    image:'images/proyectos/siren/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      logo:[ M('7.png','H') ],
+      video:[ M('video_V.mp4','V') ],
+      gif:[],
+      main:[ M('1.png','V'), M('2.png','V'), M('3.png','V'), M('4.png','V'), M('5.png','V'), M('6.png','V') ],
+      process:[]
+    },
     title:'S!REN', label:'Identidad Musical · 2024',
     color:'#cc00ff', dark:'#380052', tags:['Música','IA Generativa','Motion'], year:'2024',
     description:'Propuesta de diseño de personajes ficticios inspirada en el género musical hyperpop.',
@@ -1162,7 +1592,20 @@ const PROJECTS = [
   },
   {
     id:'sintetizador',
-    image:'https://placehold.co/400x300/121212/ff44bb?text=SINTETIZADOR', 
+    image:'images/proyectos/sintetizador/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[ M('video_H.mp4','H') ],
+      gif:[],
+      main:[
+        M('1_V.jpeg','V'), M('2_H.jpeg','H'), M('3_V.jpeg','V'), M('4_V.jpeg','V'),
+        M('5_V.jpeg','V'), M('6_V.jpeg','V'), M('7_V.jpeg','V'), M('8_V.jpeg','V'), M('9_V.jpeg','V')
+      ],
+      process:[
+        M('p.1_H.jpeg','H'), M('p.2_H.jpeg','H'), M('p.3_C.png','C'),
+        M('p.4_C.png','C'), M('p.5_H.png','H'), M('p.6_H.png','H')
+      ]
+    },
     title:'SINTETIZADOR', label:'Electrónica · 2024',
     color:'#ff44bb', dark:'#5c0042', tags:['Electrónica','Fabricación','Música'], year:'2024',
     description:'Desarrollo de secuenciadores electrónicos para un sintetizador grupal interactivo coordinado por un reloj.',
@@ -1173,7 +1616,18 @@ const PROJECTS = [
   },
   {
     id:'humboldt',
-    image:'https://placehold.co/400x300/121212/00ccaa?text=PINGUINOS+HUMBOLDT',
+    image:'images/proyectos/humboldt/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[],
+      gif:[],
+      main:[
+        M('1_H.png','H'), M('2_V.png','V'), M('3_H.png','H'), M('4_H.png','H'),
+        M('5_H.png','H'), M('6_H.png','H'), M('7_H.png','H'), M('8_H.png','H'),
+        M('9_H.png','H'), M('10_V.jpeg','V'), M('11_V.jpeg','V')
+      ],
+      process:[ M('p.1_H.png','H') ]
+    },
     title:'PINGÜINOS DE HUMBOLDT', label:'Branding · Identidad Visual',
     color:'#00ccaa', dark:'#00332a', tags:['Branding','Ilustración','Merchandising'], year:'',
     description:'Brandbook y sistema de comunicación visual para la Reserva Nacional Pingüinos de Humboldt.',
@@ -1184,7 +1638,14 @@ const PROJECTS = [
   },
   {
     id:'ley21151',
-    image:'https://placehold.co/400x300/121212/ffee00?text=LEY+21.151',
+    image:'images/proyectos/ley21151/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[],
+      gif:[],
+      main:[ M('1_V.png','V'), M('2_V.png','V'), M('3_V.jpeg','V'), M('4_V.jpeg','V') ],
+      process:[]
+    },
     title:'INFOGRAFÍA LEY 21.151', label:'Infografía · Colaboración con Derecho',
     color:'#ffee00', dark:'#4d4600', tags:['Infografía','Editorial','Colaboración'], year:'',
     description:'Infografía colaborativa con un curso de Derecho sobre el reconocimiento al pueblo afrodescendiente chileno.',
@@ -1195,7 +1656,17 @@ const PROJECTS = [
   },
   {
     id:'teatro',
-    image:'https://placehold.co/400x300/121212/8844ff?text=SINFONIA+FANTASTICA',
+    image:'images/proyectos/teatro/portada.jpg',
+    media:{
+      cover:'portada.jpg',
+      video:[ M('video_H.mp4','H') ],
+      gif:[],
+      main:[ M('1_V.jpeg','V') ],
+      process:[
+        M('p.1_H.jpg','H'), M('p.2_H.jpg','H'), M('p.3_H.jpg','H'), M('p.4_H.jpg','H'), M('p.5_H.jpg','H'),
+        M('p.6_H.jpg','H'), M('p.7_H.jpg','H'), M('p.8_H.jpg','H'), M('p.9_H.jpg','H'), M('p.10_H.jpg','H')
+      ]
+    },
     title:'SINFONÍA FANTÁSTICA', label:'Video Arte · Teatro Municipal de Santiago',
     color:'#8844ff', dark:'#20103d', tags:['Motion','Video Arte','Animación'], year:'',
     description:'Video surrealista para el Teatro Municipal de Santiago basado en la Sinfonía fantástica de Hector Berlioz.',
@@ -1289,12 +1760,11 @@ const viewContent = document.getElementById('project-view-content');
 // Inserción de Cartucho Física con animación de Monitor CRT
 function openProject(p, cartridgeEl){
   cartridgeEl.classList.add('is-ejecting');
-  
+
   setTimeout(() => {
     cartridgeEl.classList.remove('is-ejecting');
-    
-    // Maquetación asimétrica brutalista
-    viewContent.innerHTML = `
+
+    const header = `
       <div class="editorial-header">
         <button class="back-btn" onclick="closeProject()">← REGRESAR A PROYECTOS</button>
         <h1 style="color:${p.color};" class="glitch-hover">${p.title}</h1>
@@ -1302,59 +1772,155 @@ function openProject(p, cartridgeEl){
           <span>AÑO: ${p.year || 'S/I'}</span>
         </div>
       </div>
-      
-      <div class="editorial-content-grid">
-        <div class="editorial-gallery">
-          <div class="editorial-media-row">
-            <div class="media-item" data-label="IMAGEN 1 — ${p.id}/1.jpg" style="border-color:${p.color}44;">
-              <img src="images/proyectos/${p.id}/1.jpg" alt="${p.title} — imagen 1" onerror="this.parentElement.classList.add('img-missing'); this.remove();">
-            </div>
-            <div class="media-item" data-label="IMAGEN 2 — ${p.id}/2.jpg" style="border-color:${p.color}44;">
-              <img src="images/proyectos/${p.id}/2.jpg" alt="${p.title} — imagen 2" onerror="this.parentElement.classList.add('img-missing'); this.remove();">
-            </div>
-            <div class="media-item" data-label="IMAGEN 3 — ${p.id}/3.jpg" style="border-color:${p.color}44;">
-              <img src="images/proyectos/${p.id}/3.jpg" alt="${p.title} — imagen 3" onerror="this.parentElement.classList.add('img-missing'); this.remove();">
-            </div>
-          </div>
-          <div class="media-item" data-label="VIDEO — ${p.id}/video.mp4" style="border-color:${p.color}44;">
-            <video src="images/proyectos/${p.id}/video.mp4" controls playsinline onerror="this.parentElement.classList.add('video-missing'); this.remove();"></video>
-          </div>
-        </div>
-        
-        <div class="flex flex-col gap-6">
-          <div class="flex gap-2 flex-wrap">
-            ${p.tags.map(t => `<span class="font-pixel border border-zinc-800 px-3 py-1 text-sm" style="color:${p.color};">${t}</span>`).join('')}
-          </div>
-          
-          <p class="text-zinc-300 font-mono text-base leading-relaxed">${p.longDescription}</p>
-          
-          <div class="editorial-block">
-            <h3 style="color:${p.color};">EL DESAFÍO DIRECTO</h3>
-            <p class="text-zinc-400 text-sm leading-relaxed">${p.challenge}</p>
-          </div>
-          
-          <div class="editorial-block">
-            <h3 style="color:${p.color};">SOLUCIÓN LOGRADA</h3>
-            <p class="text-zinc-400 text-sm leading-relaxed">${p.solution}</p>
-          </div>
-          
-          ${p.link ? `
-            <div class="mt-6">
-              <a href="${p.link.url}" target="_blank" rel="noopener" class="inline-block py-4 px-6 text-black font-pixel text-xl" style="background:${p.color};">
-                ${p.link.label}
-              </a>
-            </div>
-          ` : ''}
-        </div>
+    `;
+
+    const linkBlock = p.link ? `
+      <div>
+        <a href="${p.link.url}" target="_blank" rel="noopener" class="inline-block py-4 px-6 text-black font-pixel text-xl" style="background:${p.color};">
+          ${p.link.label}
+        </a>
+      </div>
+    ` : '';
+
+    const tagsRow = `
+      <div class="ed-meta-row">
+        ${p.tags.map(t => `<span class="ed-tag" style="color:${p.color};">${t}</span>`).join('')}
       </div>
     `;
-    
+
+    viewContent.innerHTML = header + renderProjectEditorial(p, tagsRow, linkBlock);
+
     document.body.style.overflow = 'hidden';
     view.classList.remove('crt-closing');
     view.classList.add('open', 'crt-opening');
     updateCursorListeners();
     view.scrollTo(0,0);
+    initEditorialInteractivity();
   }, 450);
+}
+
+/* ============ SISTEMA DE MEDIA DINÁMICO POR PROYECTO ============ */
+/* Construye la ruta real del archivo dentro de la carpeta del proyecto */
+function mSrc(p, file){ return `images/proyectos/${p.id}/${file}`; }
+
+/* Genera un bloque .ed-media (imagen, gif o video) con máscara de recorte según su orientación real (H/V/C) */
+function mediaBlock(p, item, kind, extraClass){
+  const src = mSrc(p, item.file);
+  const oClass = `o-${item.o || 'C'}`;
+  const isGif = kind === 'gif';
+  const dataKind = kind === 'video' ? 'video' : 'img';
+  const label = `${kind.toUpperCase()} — ${p.id}/${item.file}`;
+  const inner = kind === 'video'
+    ? `<video src="${src}" controls playsinline muted loop onerror="this.parentElement.classList.add('video-missing'); this.remove();"></video>`
+    : `<img src="${src}" alt="${p.title} — ${item.file}" loading="lazy" onerror="this.parentElement.classList.add('img-missing'); this.remove();">`;
+  return `<div class="ed-media reveal ${oClass} ${isGif ? 'is-gif' : ''} ${extraClass||''}" data-kind="${dataKind}" data-src="${src}" data-label="${label}" style="--m-color:${p.color};border-color:${p.color}33;">${inner}</div>`;
+}
+
+/* Renderiza una tira horizontal de medios (usada para GIFs y para el Proceso) */
+function renderStrip(p, items, kind, labelText){
+  if (!items || !items.length) return '';
+  return `
+    <div class="ed-strip-wrap reveal">
+      <span class="ed-strip-label" style="color:${p.color};">${labelText}</span>
+      <div class="ed-strip">
+        ${items.map(it => mediaBlock(p, it, kind)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* Motor único de renderizado editorial: arma la experiencia de cada proyecto
+   a partir de su manifiesto real de archivos (portada, main, gif, video, process, logo).
+   El orden y la disposición se generan dinámicamente según lo que cada proyecto realmente tiene. */
+function renderProjectEditorial(p, tagsRow, linkBlock){
+  const m = p.media || {};
+  const mainItems = (m.main || []).slice();
+  const firstMain = mainItems.shift(); // se usa en la intro, el resto va al mosaico
+
+  const hero = m.cover ? `
+    <div class="ed-hero reveal" style="--m-color:${p.color};">
+      <img src="${mSrc(p, m.cover)}" alt="${p.title} — portada" onerror="this.parentElement.style.display='none';">
+      <span class="ed-hero-kicker" style="color:${p.color};">${p.label}</span>
+    </div>
+  ` : '';
+
+  const logoBlock = (m.logo && m.logo.length) ? `
+    <div class="ed-logo-block reveal">
+      ${m.logo.map(it => mediaBlock(p, it, 'image')).join('')}
+    </div>
+  ` : '';
+
+  const introRow = `
+    <div class="ed-intro-row">
+      <p class="ed-body lead reveal">${p.longDescription}</p>
+      ${firstMain ? mediaBlock(p, firstMain, 'image') : ''}
+    </div>
+  `;
+
+  const mosaic = mainItems.length ? `
+    <div class="ed-mosaic">
+      ${mainItems.map(it => mediaBlock(p, it, 'image')).join('')}
+    </div>
+  ` : '';
+
+  const featuredVideo = (m.video && m.video.length) ? m.video.map(v => `
+    <div class="reveal ed-featured-video o-${v.o || 'H'}">
+      ${mediaBlock(p, v, 'video')}
+    </div>
+  `).join('') : '';
+
+  const gifStrip = renderStrip(p, m.gif, 'gif', 'LOOPS // GIF');
+  const processStrip = renderStrip(p, m.process, 'image', 'PROCESO');
+
+  const closing = `
+    <div class="ed-flow" style="gap:60px;">
+      ${p.challenge ? `<div class="reveal"><h3 class="ed-label" style="color:${p.color};">EL DESAFÍO DIRECTO</h3><p class="ed-body">${p.challenge}</p></div>` : ''}
+      ${p.solution ? `<div class="reveal"><h3 class="ed-label" style="color:${p.color};">SOLUCIÓN LOGRADA</h3><p class="ed-body">${p.solution}</p></div>` : ''}
+      ${linkBlock}
+    </div>
+  `;
+
+  return `
+    <div class="ed-flow">
+      ${hero}
+      ${tagsRow}
+      ${logoBlock}
+      ${introRow}
+      ${mosaic}
+      ${featuredVideo}
+      ${gifStrip}
+      ${processStrip}
+      ${closing}
+    </div>
+  `;
+}
+
+let editorialObserver = null;
+function initEditorialInteractivity(){
+  // Animación de entrada al hacer scroll dentro de la vista de proyecto
+  if (editorialObserver) editorialObserver.disconnect();
+  const targets = viewContent.querySelectorAll('.reveal, .ed-media');
+  if ('IntersectionObserver' in window){
+    editorialObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          editorialObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, root: view });
+    targets.forEach(el => editorialObserver.observe(el));
+  } else {
+    targets.forEach(el => el.classList.add('in-view'));
+  }
+
+  // Click en imágenes abre el lightbox
+  viewContent.querySelectorAll('.ed-media[data-kind="img"]').forEach(el => {
+    el.addEventListener('click', () => {
+      if (el.classList.contains('img-missing')) return;
+      openLightbox(el.getAttribute('data-src'), el.querySelector('img')?.alt || '');
+    });
+  });
 }
 
 function closeProject(){
@@ -1449,6 +2015,130 @@ if ('IntersectionObserver' in window) {
 window.onload = function() {
   updateCursorListeners();
 }
+
+/* ============ LIGHTBOX CON ZOOM REAL ============ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxStage = document.getElementById('lightbox-stage');
+
+let lbScale = 1, lbX = 0, lbY = 0;
+let lbDragging = false, lbLastX = 0, lbLastY = 0;
+let lbPinchDist = null;
+
+function applyLbTransform(){
+  lightboxImg.style.transform = `translate(${lbX}px, ${lbY}px) scale(${lbScale})`;
+}
+
+function resetLbZoom(){
+  lbScale = 1; lbX = 0; lbY = 0;
+  lightboxImg.classList.remove('zoomed', 'dragging');
+  applyLbTransform();
+}
+
+function openLightbox(src, alt){
+  lightboxImg.src = src;
+  lightboxImg.alt = alt;
+  resetLbZoom();
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  resetLbZoom();
+  document.body.style.overflow = view.classList.contains('open') ? 'hidden' : '';
+}
+
+function toggleZoom(){
+  if (lbScale > 1){
+    resetLbZoom();
+  } else {
+    lbScale = 2.4;
+    lightboxImg.classList.add('zoomed');
+    applyLbTransform();
+  }
+}
+
+document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+document.getElementById('lightbox-zoom-btn').addEventListener('click', toggleZoom);
+lightboxImg.addEventListener('click', (e) => { e.stopPropagation(); toggleZoom(); });
+lightboxImg.addEventListener('dblclick', (e) => { e.stopPropagation(); toggleZoom(); });
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox || e.target === lightboxStage) closeLightbox(); });
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+});
+
+// Rueda del mouse para zoom incremental
+lightboxStage.addEventListener('wheel', (e) => {
+  if (!lightbox.classList.contains('open')) return;
+  e.preventDefault();
+  const prevScale = lbScale;
+  lbScale = Math.min(5, Math.max(1, lbScale - e.deltaY * 0.0025));
+  if (lbScale === 1){ lbX = 0; lbY = 0; lightboxImg.classList.remove('zoomed'); }
+  else { lightboxImg.classList.add('zoomed'); lbX = lbX * (lbScale/prevScale); lbY = lbY * (lbScale/prevScale); }
+  applyLbTransform();
+}, { passive: false });
+
+// Arrastre con mouse cuando hay zoom
+lightboxImg.addEventListener('mousedown', (e) => {
+  if (lbScale <= 1) return;
+  e.preventDefault();
+  lbDragging = true;
+  lbLastX = e.clientX; lbLastY = e.clientY;
+  lightboxImg.classList.add('dragging');
+});
+window.addEventListener('mousemove', (e) => {
+  if (!lbDragging) return;
+  lbX += e.clientX - lbLastX;
+  lbY += e.clientY - lbLastY;
+  lbLastX = e.clientX; lbLastY = e.clientY;
+  applyLbTransform();
+});
+window.addEventListener('mouseup', () => {
+  lbDragging = false;
+  lightboxImg.classList.remove('dragging');
+});
+
+// Touch: arrastre de un dedo, pinch de dos dedos
+lightboxStage.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1 && lbScale > 1){
+    lbDragging = true;
+    lbLastX = e.touches[0].clientX; lbLastY = e.touches[0].clientY;
+  } else if (e.touches.length === 2){
+    lbPinchDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+}, { passive: true });
+
+lightboxStage.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 1 && lbDragging){
+    e.preventDefault();
+    lbX += e.touches[0].clientX - lbLastX;
+    lbY += e.touches[0].clientY - lbLastY;
+    lbLastX = e.touches[0].clientX; lbLastY = e.touches[0].clientY;
+    applyLbTransform();
+  } else if (e.touches.length === 2 && lbPinchDist !== null){
+    e.preventDefault();
+    const newDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    const prevScale = lbScale;
+    lbScale = Math.min(5, Math.max(1, lbScale * (newDist / lbPinchDist)));
+    lbPinchDist = newDist;
+    if (lbScale === 1){ lbX = 0; lbY = 0; lightboxImg.classList.remove('zoomed'); }
+    else { lightboxImg.classList.add('zoomed'); lbX = lbX * (lbScale/prevScale); lbY = lbY * (lbScale/prevScale); }
+    applyLbTransform();
+  }
+}, { passive: false });
+
+lightboxStage.addEventListener('touchend', (e) => {
+  if (e.touches.length < 2) lbPinchDist = null;
+  if (e.touches.length === 0) lbDragging = false;
+});
 </script>
 </body>
 </html>
