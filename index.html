@@ -346,6 +346,7 @@ section{
 }
 .hero-name-stage.show-alt.is-hover .hero-name-alt{
   animation: textGlitch 0.4s steps(2) 3;
+  transform: scale(1.1);
 }
 
 @keyframes heroPulse{
@@ -1037,7 +1038,11 @@ body.site-impact{
   width:100%; height:100%; object-fit:cover; display:block;
   transition: transform 0.6s cubic-bezier(.16,1,.3,1), filter 0.4s ease;
 }
+.ed-media.no-crop img, .ed-media.no-crop video{
+  object-fit: contain;
+}
 .ed-media:hover img{ transform: scale(1.06); filter: brightness(1.08); }
+.ed-media.no-crop:hover img{ transform: scale(1.02); }
 .ed-media:hover{ border-color: var(--m-color, #fff); }
 .ed-media::after{
   content:'＋';
@@ -1485,7 +1490,7 @@ body.site-impact{
         <a href="https://www.instagram.com/graf.pan" target="_blank" rel="noopener" class="social-link">
           INSTAGRAM — @graf.pan
         </a>
-        <a href="tel:+56962239078" class="social-link">
+        <a href="https://wa.me/56962239078" target="_blank" rel="noopener" class="social-link">
           +56 9 6223 9078
         </a>
       </div>
@@ -1624,6 +1629,9 @@ if (heroNameStage) {
   heroNameStage.addEventListener('click', triggerMonitorShake);
   heroNameStage.addEventListener('mouseenter', () => heroNameStage.classList.add('is-hover'));
   heroNameStage.addEventListener('mouseleave', () => heroNameStage.classList.remove('is-hover'));
+  heroNameStage.addEventListener('touchstart', () => heroNameStage.classList.add('is-hover'), { passive: true });
+  heroNameStage.addEventListener('touchend', () => heroNameStage.classList.remove('is-hover'));
+  heroNameStage.addEventListener('touchcancel', () => heroNameStage.classList.remove('is-hover'));
 
   if ('IntersectionObserver' in window) {
     const shakeObserver = new IntersectionObserver((entries) => {
@@ -1717,7 +1725,7 @@ const PROJECTS = [
       process:[]
     },
     title:'CROMA', label:'Instalación Interactiva · 2025',
-    color:'#00aaff', dark:'#003a66', tags:['Visualización de datos','instalación','Data'], year:'2024',
+    color:'#00aaff', dark:'#003a66', tags:['Visualización de datos','instalación','Data'], year:'2025',
     description:'Instalación interactiva diseñada para registrar los colores dominantes en la vestimenta de los usuarios y revelar patrones emocionales colectivos.',
     longDescription:'CROMA es una instalación interactiva diseñada para registrar los colores dominantes en la vestimenta de los usuarios y revelar patrones emocionales colectivos basados en la Escala de bienestar psicológico de Ryff. Utiliza un ecosistema técnico que integra Python para la recolección de datos y detección de personas mediante IA, Processing para la visualización dinámica y agrupación cromática, Madmapper para las proyecciones y Canva para las láminas.',
     challenge:'Operar en condiciones de baja luminosidad garantizando detecciones precisas, tras descartar TouchDesigner por su complejidad técnica.',
@@ -1758,7 +1766,7 @@ const PROJECTS = [
       process:[]
     },
     title:'VIVIR EN UN MUNDO DETERIORADO', label:'Sistema gráfico · 2024',
-    color:'#ff2244', dark:'#5c0015', tags:['Sistema Gráfico','Editorial','Impresión'], year:'2023',
+    color:'#ff2244', dark:'#5c0015', tags:['Sistema Gráfico','Editorial','Impresión'], year:'2024',
     description:'Sistema gráfico integral diseñado para poetas chilenos, articulado bajo el concepto del deterioro.',
     longDescription:'VIVIR EN UN MUNDO DETERIORADO es un sistema gráfico integral diseñado para poetas chilenos, articulado bajo el concepto del deterioro. El desarrollo técnico implicó el uso de Illustrator para la estructuración de grillas y posicionamiento gráfico, Photoshop para el tratamiento y recorte de imágenes, e InDesign para la composición final del fanzine.',
     challenge:'La complejidad del tratamiento de texturas de alta resolución, que saturaba el rendimiento de los programas de composición.',
@@ -1777,7 +1785,7 @@ const PROJECTS = [
     },
     filtersLink:{ url:'https://drive.google.com/drive/u/0/folders/1SUIurSYrSJvULb5bxX92DnnLRRc22yIt', label:'Ver todos los filtros en Google Drive →' },
     title:'ARCHIVO RETRO', label:'Hardware · 2026',
-    color:'#ff8800', dark:'#4a2700', tags:['Electrónica','Fotografía','Firmware'], year:'2025',
+    color:'#ff8800', dark:'#4a2700', tags:['Electrónica','Fotografía','Firmware'], year:'2026',
     description:'Dispositivo electrónico inalámbrico que fusiona la fotografía digital con la estética de consolas clásicas.',
     longDescription:'ARCHIVO RETRO es un dispositivo electrónico inalámbrico que fusiona la fotografía digital con la estética de consolas clásicas. Su arquitectura técnica utiliza un Arduino UNO R4 WiFi como controlador de disparo, una Raspberry Pi Pico 2W para la gestión de la pantalla TFT y un módulo ESP32 con cámara integrada para la captura independiente. El sistema permite seleccionar filtros mediante un potenciómetro, cambiar el estilo de tramado y subir automáticamente las fotos a Google Drive a través de scripts.',
     challenge:'Distribuir la carga de procesamiento y comunicación inalámbrica entre los tres microcontroladores de distinta potencia.',
@@ -1797,7 +1805,7 @@ const PROJECTS = [
       process:[]
     },
     title:'S!REN', label:'Identidad Musical · 2026',
-    color:'#cc00ff', dark:'#380052', tags:['IA generativa','Música','Motion'], year:'2024',
+    color:'#cc00ff', dark:'#380052', tags:['IA generativa','Música','Motion'], year:'2026',
     description:'Propuesta de diseño de personajes ficticios inspirada en el género musical hyperpop.',
     longDescription:'S!REN es una propuesta de diseño de personajes ficticios inspirada en el género hyperpop, desarrollada mediante el uso avanzado de herramientas de inteligencia artificial generativa como Nano Banana Pro, ChatGPT, Kling AI y Higgsfields.',
     challenge:'Mitigar las inconsistencias visuales propias de la generación por IA para lograr coherencia estética entre las fotografías y, especialmente, en las piezas de video.',
@@ -1820,8 +1828,8 @@ const PROJECTS = [
         M('p.4_C.png','C'), M('p.5_H.png','H'), M('p.6_H.png','H')
       ]
     },
-    title:'SINTETIZADOR', label:'Electrónica · 2026',
-    color:'#ff44bb', dark:'#5c0042', tags:['Electrónica','Fabricación','Música'], year:'2024',
+    title:'SINTETIZADOR', label:'Electrónica · En colaboracion.',
+    color:'#ff44bb', dark:'#5c0042', tags:['Electrónica','Fabricación','Música'], year:'2026',
     description:'Desarrollo de secuenciadores electrónicos para un sintetizador grupal interactivo coordinado por un reloj.',
     longDescription:'Las Creaciones de placas para sintetizador consistieron en el desarrollo de secuenciadores electrónicos para un sintetizador grupal interactivo, cuyo funcionamiento depende de un reloj que coordina la emisión de sonidos a través de múltiples placas. El proceso técnico incluyó el diseño de circuitos en TinkerCAD y la gestión de fabricación de componentes desde China.',
     challenge:'Partir de un conocimiento nulo en electrónica y superar un riguroso proceso de prueba y error de hardware.',
@@ -1832,6 +1840,7 @@ const PROJECTS = [
   {
     id:'humboldt',
     image:'images/proyectos/humboldt/portada.jpg',
+    noCrop:true,
     media:{
       cover:'portada.jpg',
       video:[],
@@ -1862,7 +1871,7 @@ const PROJECTS = [
       process:[]
     },
     title:'LEY 21.151', label:'Infografía · Colaboración con Derecho',
-    color:'#ffee00', dark:'#4d4600', tags:['Infografía','Editorial','Colaboración'], year:'',
+    color:'#ffee00', dark:'#4d4600', tags:['Infografía','Editorial','Colaboración'], year:'2025',
     description:'Infografía colaborativa con un curso de Derecho sobre el reconocimiento al pueblo afrodescendiente chileno.',
     longDescription:'La Infografía Ley 21.151 es un proyecto colaborativo realizado con un curso de Derecho que contextualiza y explica el reconocimiento al pueblo afrodescendiente chileno. El trabajo técnico se centró en el uso de Illustrator para la arquitectura infográfica y Photoshop para el tratamiento de imágenes, transformando investigaciones académicas en un recurso visual accesible.',
     challenge:'Organizar una gran densidad de información académica manteniendo el foco de la audiencia.',
@@ -1996,52 +2005,121 @@ window.addEventListener('resize', () => {
 const view = document.getElementById('project-view');
 const viewContent = document.getElementById('project-view-content');
 
-// Inserción de Cartucho Física con animación de Monitor CRT
+/* ============ NAVEGACIÓN CON HISTORIAL DEL NAVEGADOR ============
+   Cada proyecto abierto se registra como una entrada de historial
+   (#id-del-proyecto). Esto permite usar los botones "atrás"/"adelante"
+   del navegador para cerrar o reabrir proyectos, en vez de que el usuario
+   se quede atrapado o tenga que volver a la página anterior por completo. */
+let currentOpenProject = null;
+
+// Construye el DOM del proyecto y anima el monitor CRT, SIN tocar el historial.
+function openProjectView(p){
+  currentOpenProject = p;
+
+  const header = `
+    <div class="editorial-header">
+      <h1 style="color:${p.color};" class="glitch-hover">${p.title}</h1>
+      <div class="editorial-meta">
+        <span>AÑO: ${p.year || 'S/I'}</span>
+      </div>
+    </div>
+  `;
+
+  const linkBlock = p.link ? `
+    <div>
+      <a href="${p.link.url}" target="_blank" rel="noopener" class="inline-block py-4 px-6 text-black font-pixel text-xl" style="background:${p.color};">
+        ${p.link.label}
+      </a>
+    </div>
+  ` : '';
+
+  const tagsRow = `
+    <div class="ed-meta-row">
+      ${p.tags.map(t => `<span class="ed-tag" style="color:${p.color};">${t}</span>`).join('')}
+    </div>
+  `;
+
+  viewContent.innerHTML = header + renderProjectEditorial(p, tagsRow, linkBlock);
+
+  document.body.style.overflow = 'hidden';
+  view.classList.remove('crt-closing');
+  view.classList.add('open', 'crt-opening');
+
+  const backBtn = document.getElementById('editorial-back-btn');
+  if (backBtn) backBtn.classList.add('visible');
+  buildEditorialIndex();
+
+  view.scrollTo(0,0);
+  initEditorialInteractivity();
+  initEditorialScrollStrips();
+  updateCursorListeners();
+}
+
+// Inserción de Cartucho Física con animación de Monitor CRT (uso: click directo en un cartucho)
 function openProject(p, cartridgeEl){
   cartridgeEl.classList.add('is-ejecting');
 
   setTimeout(() => {
     cartridgeEl.classList.remove('is-ejecting');
-
-    const header = `
-      <div class="editorial-header">
-        <h1 style="color:${p.color};" class="glitch-hover">${p.title}</h1>
-        <div class="editorial-meta">
-          <span>AÑO: ${p.year || 'S/I'}</span>
-        </div>
-      </div>
-    `;
-
-    const linkBlock = p.link ? `
-      <div>
-        <a href="${p.link.url}" target="_blank" rel="noopener" class="inline-block py-4 px-6 text-black font-pixel text-xl" style="background:${p.color};">
-          ${p.link.label}
-        </a>
-      </div>
-    ` : '';
-
-    const tagsRow = `
-      <div class="ed-meta-row">
-        ${p.tags.map(t => `<span class="ed-tag" style="color:${p.color};">${t}</span>`).join('')}
-      </div>
-    `;
-
-    viewContent.innerHTML = header + renderProjectEditorial(p, tagsRow, linkBlock);
-
-    document.body.style.overflow = 'hidden';
-    view.classList.remove('crt-closing');
-    view.classList.add('open', 'crt-opening');
-
-    const backBtn = document.getElementById('editorial-back-btn');
-    if (backBtn) backBtn.classList.add('visible');
-    buildEditorialIndex();
-
-    view.scrollTo(0,0);
-    initEditorialInteractivity();
-    initEditorialScrollStrips();
-    updateCursorListeners();
+    openProjectView(p);
+    // Registra esta apertura en el historial del navegador para poder
+    // volver atrás con el botón nativo en vez de solo el botón "regresar".
+    history.pushState({ project: p.id }, '', '#' + p.id);
   }, 450);
 }
+
+// Cierra visualmente el proyecto (animación CRT), SIN tocar el historial.
+function closeProjectView(){
+  currentOpenProject = null;
+  view.classList.remove('crt-opening');
+  view.classList.add('crt-closing');
+
+  const backBtn = document.getElementById('editorial-back-btn');
+  if (backBtn) backBtn.classList.remove('visible');
+  const indexEl = document.getElementById('editorial-index');
+  if (indexEl){ indexEl.classList.remove('visible'); indexEl.innerHTML = ''; }
+  stopAllEditorialScrollStrips();
+
+  setTimeout(() => {
+    view.classList.remove('open', 'crt-closing');
+    document.body.style.overflow = '';
+  }, 400);
+}
+
+// Llamado por el botón "regresar" y por la tecla Escape: navega hacia atrás
+// en el historial (esto dispara 'popstate', que a su vez cierra la vista).
+function closeProject(){
+  if (currentOpenProject){
+    history.back();
+  } else {
+    closeProjectView();
+  }
+}
+
+// Sincroniza la vista con el historial cuando el usuario usa los botones
+// atrás/adelante del navegador (o gestos equivalentes).
+window.addEventListener('popstate', (event) => {
+  const state = event.state;
+  if (state && state.project) {
+    const p = PROJECTS.find(x => x.id === state.project);
+    if (p) openProjectView(p);
+  } else {
+    if (currentOpenProject) closeProjectView();
+  }
+});
+
+// Si la página se carga directamente con un hash de proyecto (#croma, etc.),
+// lo abre de entrada y deja una base de historial consistente.
+window.addEventListener('DOMContentLoaded', () => {
+  const hashId = location.hash ? location.hash.slice(1) : null;
+  const initialProject = hashId ? PROJECTS.find(x => x.id === hashId) : null;
+  if (initialProject) {
+    history.replaceState({ project: initialProject.id }, '', '#' + initialProject.id);
+    openProjectView(initialProject);
+  } else {
+    history.replaceState({ project: null }, '', location.pathname + location.search);
+  }
+});
 
 /* ============ ÍNDICE DE SECCIONES DEL PROYECTO ============
    Se arma dinámicamente según qué bloques existen realmente en el proyecto
@@ -2082,7 +2160,9 @@ function buildEditorialIndex(){
 /* Construye la ruta real del archivo dentro de la carpeta del proyecto */
 function mSrc(p, file){ return `images/proyectos/${p.id}/${file}`; }
 
-/* Genera un bloque .ed-media (imagen, gif o video) con máscara de recorte según su orientación real (H/V/C) */
+/* Genera un bloque .ed-media (imagen, gif o video) con máscara de recorte según su orientación real (H/V/C).
+   Si el proyecto tiene noCrop:true, la imagen se muestra completa (object-fit:contain)
+   en vez de recortada, dejando el patrón de fondo como "marco" cuando la proporción no calza. */
 function mediaBlock(p, item, kind, extraClass){
   const src = mSrc(p, item.file);
   const oClass = `o-${item.o || 'C'}`;
@@ -2092,7 +2172,8 @@ function mediaBlock(p, item, kind, extraClass){
   const inner = kind === 'video'
     ? `<video src="${src}" controls playsinline muted loop onerror="this.parentElement.classList.add('video-missing'); this.remove();"></video>`
     : `<img src="${src}" alt="${p.title} — ${item.file}" loading="lazy" onerror="this.parentElement.classList.add('img-missing'); this.remove();">`;
-  return `<div class="ed-media reveal ${oClass} ${isGif ? 'is-gif' : ''} ${extraClass||''}" data-kind="${dataKind}" data-src="${src}" data-label="${label}" style="--m-color:${p.color};border-color:${p.color}33;">${inner}</div>`;
+  const noCropClass = p.noCrop ? 'no-crop' : '';
+  return `<div class="ed-media reveal ${oClass} ${isGif ? 'is-gif' : ''} ${noCropClass} ${extraClass||''}" data-kind="${dataKind}" data-src="${src}" data-label="${label}" style="--m-color:${p.color};border-color:${p.color}33;">${inner}</div>`;
 }
 
 /* Renderiza una tira horizontal de medios (usada para Filtros y para el Proceso).
@@ -2347,22 +2428,6 @@ function stopAllEditorialScrollStrips(){
     clearTimeout(state.resumeTimer);
   });
   activeEditorialStrips = [];
-}
-
-function closeProject(){
-  view.classList.remove('crt-opening');
-  view.classList.add('crt-closing');
-
-  const backBtn = document.getElementById('editorial-back-btn');
-  if (backBtn) backBtn.classList.remove('visible');
-  const indexEl = document.getElementById('editorial-index');
-  if (indexEl){ indexEl.classList.remove('visible'); indexEl.innerHTML = ''; }
-  stopAllEditorialScrollStrips();
-
-  setTimeout(() => {
-    view.classList.remove('open', 'crt-closing');
-    document.body.style.overflow = '';
-  }, 400);
 }
 
 document.addEventListener('keydown', (e) => {
