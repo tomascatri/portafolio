@@ -30,6 +30,9 @@
 <!-- Tailwind CSS para base y estructura responsiva -->
 <script src="https://cdn.tailwindcss.com"></script>
 
+<!-- EmailJS: permite enviar el formulario de contacto sin abrir otra pestaña (ver configuración al final del archivo) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 
 <style>
 :root{
@@ -447,6 +450,47 @@ body.site-impact{
   color:#ccc;
 }
 
+/* ---------- CTA "Ver Proyectos" del Hero ---------- */
+.cta-proyectos{
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  background: var(--color-yellow);
+  color:#080808;
+  font-family: var(--font-pixel);
+  font-size: 22px;
+  letter-spacing: 1px;
+  text-decoration:none;
+  padding: 18px 34px;
+  border: 2px solid var(--color-yellow);
+  box-shadow: 0 8px 0 #7a6a00, 0 0 0 rgba(255,221,0,0.6);
+  animation: ctaPulse 2.4s ease-in-out infinite;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.cta-proyectos:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 11px 0 #7a6a00, 0 0 26px rgba(255,221,0,0.7);
+}
+.cta-proyectos:active{
+  transform: translateY(4px);
+  box-shadow: 0 0px 0 #7a6a00;
+}
+.cta-proyectos-arrow{
+  display:inline-block;
+  animation: ctaArrowBounce 1.6s ease-in-out infinite;
+}
+@keyframes ctaPulse{
+  0%, 100%{ box-shadow: 0 8px 0 #7a6a00, 0 0 0 rgba(255,221,0,0.55); }
+  50%{ box-shadow: 0 8px 0 #7a6a00, 0 0 24px rgba(255,221,0,0.55); }
+}
+@keyframes ctaArrowBounce{
+  0%, 100%{ transform: translateY(0); }
+  50%{ transform: translateY(5px); }
+}
+@media (prefers-reduced-motion: reduce){
+  .cta-proyectos, .cta-proyectos-arrow{ animation:none !important; }
+}
+
 /* ---------- Sobre Mí ---------- */
 #sobre-mi .section-label{color:var(--color-blue); border-color: rgba(0,170,255,0.3);}
 #sobre-mi h2{
@@ -538,7 +582,7 @@ body.site-impact{
 .cartridge-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
-  gap:64px 40px;
+  gap:88px 48px;
   margin-top:20px;
 }
 .cartridge-item{
@@ -551,8 +595,10 @@ body.site-impact{
   transform:perspective(700px) rotateX(0deg) translateY(0) scale(1);
 }
 .cartridge-item:hover{
-  transform:perspective(700px) rotateX(20deg) translateY(6px) scale(0.93);
+  transform:perspective(700px) rotateX(12deg) translateY(4px) scale(0.95);
   filter:brightness(0.8) drop-shadow(0 10px 14px rgba(0,0,0,.8));
+  position:relative;
+  z-index:5;
 }
 .cartridge-item:active{
   transform:perspective(700px) rotateX(28deg) translateY(12px) scale(0.87);
@@ -566,11 +612,54 @@ body.site-impact{
   transition:all .5s cubic-bezier(.6, -0.28, .735, .045);
   pointer-events:none;
 }
+.cartridge-art{
+  position: relative;
+  display: block;
+  width: 100%;
+}
+/* Superpone el título justo sobre la etiqueta ROM del SVG (misma posición que
+   antes), en vez de cortarlo con "...". Si no cabe, se activa el marquee. */
+.cart-label-overlay{
+  position: absolute;
+  left: 6.667%;
+  width: 86.667%;
+  top: 63.1%;
+  height: 10.8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  padding: 0 4px;
+}
 .cartridge-name{margin-top:14px; text-align:center;}
+.cart-title{
+  font-family: var(--font-pixel);
+  font-size: clamp(11px, 3.6vw, 16px);
+  letter-spacing: 0.5px;
+  line-height: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+  text-align: center;
+  mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 10px), transparent 100%);
+}
+.cart-title span{ display:inline-block; }
+.cart-title.marquee span{
+  animation: cartMarquee 5s ease-in-out infinite;
+}
+@keyframes cartMarquee{
+  0%, 12%{ transform: translateX(0); }
+  50%, 62%{ transform: translateX(var(--marquee-dist)); }
+  100%{ transform: translateX(0); }
+}
 .cartridge-name p.tag{
   font-family: var(--font-pixel);
   font-size: var(--title-1);
   color:#999;
+  margin-top: 2px;
 }
 
 /* ---------- CV y Contacto ---------- */
@@ -603,6 +692,41 @@ body.site-impact{
   background: var(--color-yellow);
   color: #080808;
   box-shadow: 0 0 12px rgba(255,221,0,0.5);
+}
+.email-copy-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:14px;
+  margin-top:18px;
+  padding:14px 18px;
+  background:#0d0d0d;
+  border:1px solid var(--color-border);
+}
+.email-copy-text{
+  font-family: var(--font-sans);
+  font-size:15px;
+  color:#ddd;
+  letter-spacing:0.3px;
+}
+.email-copy-btn{
+  font-family: var(--font-pixel);
+  font-size:14px;
+  letter-spacing:0.5px;
+  color: var(--color-yellow);
+  background:transparent;
+  border:1px solid rgba(255,221,0,0.35);
+  padding:8px 16px;
+  transition: all 0.2s ease;
+}
+.email-copy-btn:hover{
+  background: var(--color-yellow);
+  color:#080808;
+}
+.email-copy-btn.copied{
+  background: var(--color-green);
+  border-color: var(--color-green);
+  color:#080808;
 }
 .cv-grid {
   display: grid;
@@ -713,10 +837,16 @@ body.site-impact{
   padding: 100px max(var(--gutter), calc((100% - var(--container-max)) / 2 + var(--gutter))) 40px;
   position: relative;
 }
-.editorial-header .back-btn {
-  position: absolute;
-  top: 40px; left: max(var(--gutter), calc((100% - var(--container-max)) / 2 + var(--gutter)));
-  background: transparent;
+/* Botón "regresar" siempre visible mientras se navega dentro de un proyecto,
+   sin importar cuánto se haya deslizado hacia abajo. */
+.back-btn-fixed {
+  position: fixed;
+  top: 24px;
+  left: max(24px, calc((100% - var(--container-max)) / 2 + var(--gutter) - 16px));
+  z-index: 2200;
+  display: none;
+  background: rgba(8,8,8,0.85);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--color-border);
   color: #ccc;
   font-family: var(--font-pixel);
@@ -724,10 +854,43 @@ body.site-impact{
   padding: 12px 24px;
   transition: all 0.2s ease;
 }
-.editorial-header .back-btn:hover {
+.back-btn-fixed.visible{ display: inline-block; }
+.back-btn-fixed:hover {
   border-color: #fff;
   color: #fff;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.08);
+}
+
+/* Índice de secciones del proyecto abierto, también fijo. */
+.editorial-index{
+  position: fixed;
+  top: 24px;
+  right: max(24px, calc((100% - var(--container-max)) / 2 + var(--gutter) - 16px));
+  z-index: 2200;
+  display: none;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 56vw;
+}
+.editorial-index.visible{ display: flex; }
+.editorial-index button{
+  background: rgba(8,8,8,0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--color-border);
+  color: #ccc;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  padding: 9px 15px;
+  transition: all 0.2s ease;
+  cursor: none !important;
+}
+.editorial-index button:hover{ border-color:#fff; color:#fff; background: rgba(255,255,255,0.1); }
+.editorial-index button.is-active{ color: var(--color-yellow); border-color: var(--color-yellow); }
+@media (max-width: 900px){
+  .editorial-index{ display:none !important; }
+  .back-btn-fixed{ top: 16px; left: 16px; font-size: 14px; padding: 10px 18px; }
 }
 .editorial-header h1{
   font-family: var(--font-pixel);
@@ -810,6 +973,14 @@ body.site-impact{
   display: flex;
   flex-direction: column;
   gap: 90px;
+}
+/* Agrupa la introducción, el mosaico de imágenes/GIFs y el video destacado con
+   un espaciado más ajustado entre ellos, para que se sientan una sola galería
+   en vez de secciones separadas por vacíos grandes. */
+.ed-gallery-group{
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 .ed-meta-row{
   display:flex; gap:10px; flex-wrap:wrap; align-items:center;
@@ -1026,22 +1197,28 @@ body.site-impact{
 }
 @media (max-width: 900px){ .ed-intro-row{ grid-template-columns: 1fr; } }
 
-/* --- Mosaico dinámico (bento auto-flow según orientación real de cada archivo) --- */
+/* --- Mosaico dinámico ---
+   Antes era una grilla "bento" con filas/columnas fijas (grid-auto-rows + spans),
+   lo que con cantidades y combinaciones de orientación (H/V/C) variables podía dejar
+   huecos irregulares y hacer que tarjetas vecinas se sintieran superpuestas.
+   Ahora usa un masonry real por columnas: cada imagen ocupa una columna completa y
+   se apilan de arriba hacia abajo sin nunca invadir el espacio de otra. */
 .ed-mosaic{
-  display:grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-auto-rows: 90px;
-  grid-auto-flow: dense;
-  gap: 14px;
+  columns: 3 260px;
+  column-gap: 16px;
 }
-.ed-mosaic .ed-media.o-H{ grid-column: span 4; grid-row: span 3; }
-.ed-mosaic .ed-media.o-V{ grid-column: span 2; grid-row: span 5; }
-.ed-mosaic .ed-media.o-C{ grid-column: span 3; grid-row: span 3; }
+.ed-mosaic .ed-media{
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin: 0 0 16px 0;
+  width: 100%;
+}
+.ed-mosaic .ed-media.o-H{ aspect-ratio: 16/9; }
+.ed-mosaic .ed-media.o-V{ aspect-ratio: 3/4; }
+.ed-mosaic .ed-media.o-C{ aspect-ratio: 1/1; }
 @media (max-width: 900px){
-  .ed-mosaic{ grid-template-columns: repeat(4, 1fr); grid-auto-rows: 78px; gap:10px; }
-  .ed-mosaic .ed-media.o-H{ grid-column: span 4; grid-row: span 3; }
-  .ed-mosaic .ed-media.o-V{ grid-column: span 2; grid-row: span 5; }
-  .ed-mosaic .ed-media.o-C{ grid-column: span 2; grid-row: span 3; }
+  .ed-mosaic{ columns: 2 180px; column-gap: 10px; }
+  .ed-mosaic .ed-media{ margin-bottom: 10px; }
 }
 
 /* --- Video destacado --- */
@@ -1058,9 +1235,32 @@ body.site-impact{
   overflow-x: auto;
   padding-bottom: 10px;
   scroll-snap-type: x proximity;
+  /* La barra nativa se reemplaza por .ed-scrollbar, más grande y arrastrable */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.ed-strip::-webkit-scrollbar{ height:4px; }
-.ed-strip::-webkit-scrollbar-thumb{ background:#333; }
+.ed-strip::-webkit-scrollbar{ display:none; }
+
+/* Barra de scroll propia: más alta que la nativa (fácil de agarrar), se anima
+   sola y responde a arrastre con el mouse o el dedo. */
+.ed-scrollbar{
+  position: relative;
+  height: 18px;
+  margin-top: 4px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+.ed-scrollbar-thumb{
+  position: absolute;
+  top: 0; left: 0; height: 100%;
+  min-width: 48px;
+  background: var(--m-color, var(--color-yellow));
+  cursor: grab;
+  transition: background 0.2s ease;
+}
+.ed-scrollbar-thumb:hover{ filter: brightness(1.15); }
+.ed-scrollbar-thumb.dragging{ cursor: grabbing; }
 .ed-strip .ed-media{
   flex: 0 0 auto;
   scroll-snap-align: start;
@@ -1227,8 +1427,9 @@ body.site-impact{
       <p class="mb-8">
         Diseñador gráfico en constante experimentación técnica. Desarrollo desde branding analógico y visualización dinámica de datos, hasta interfaces de código, firmware experimental e instalaciones físicas interactivas.
       </p>
-      <a href="#proyectos" class="inline-block border border-white text-white px-8 py-4 font-pixel text-xl hover:bg-white hover:text-black transition-all">
-        Proyectos
+      <a href="#proyectos" class="cta-proyectos glitch-hover">
+        <span>Ver Proyectos</span>
+        <span class="cta-proyectos-arrow" aria-hidden="true">↓</span>
       </a>
     </div>
   </section>
@@ -1288,12 +1489,18 @@ body.site-impact{
           +56 9 6223 9078
         </a>
       </div>
+      <div class="email-copy-row">
+        <span class="email-copy-text" id="email-copy-text">tomascatrileo27@gmail.com</span>
+        <button type="button" class="email-copy-btn" id="email-copy-btn" onclick="copyEmailToClipboard()">COPIAR CORREO</button>
+      </div>
     </div>
 
     <div class="cv-grid reveal-stagger">
       <div class="cv-download-box flex flex-col justify-between h-full">
         <p class="font-pixel text-xl text-yellow-300 mb-6">Si estás interesado en mi currículum, descárgalo aquí:</p>
-        <a href="#" class="cv-download" id="cv-btn">Descargar CV</a>
+        <!-- Sube tu CV en PDF a una carpeta "cv" junto a este index.html, con este
+             mismo nombre de archivo (o cambia el href de abajo por el que uses). -->
+        <a href="cv/Tomas-Catrileo-CV.pdf" download="Tomas-Catrileo-CV.pdf" class="cv-download" id="cv-btn">Descargar CV</a>
       </div>
 
       <div class="contact-form-box">
@@ -1327,6 +1534,12 @@ body.site-impact{
 <div class="project-fullscreen-view" id="project-view">
   <div id="project-view-content"></div>
 </div>
+
+<!-- Botón "regresar" e índice del proyecto: viven fuera del contenedor animado
+     por CRT para que su position:fixed funcione siempre, incluso durante la
+     animación de apertura/cierre. Se muestran solo mientras un proyecto está abierto. -->
+<button id="editorial-back-btn" class="back-btn-fixed" onclick="closeProject()">← REGRESAR A PROYECTOS</button>
+<nav id="editorial-index" class="editorial-index" aria-label="Índice del proyecto"></nav>
 
 <!-- Lightbox con zoom real (rueda, arrastre, pinch) -->
 <div id="lightbox">
@@ -1471,7 +1684,7 @@ function createCursorParticle(x, y) {
 
 // Añadir interactividad dinámica de cursor y audio
 function updateCursorListeners() {
-  const elements = document.querySelectorAll('a, button, .cartridge-item, input, textarea');
+  const elements = document.querySelectorAll('a, button, .cartridge-item, input, textarea, .ed-scrollbar-thumb, .ed-scrollbar');
   elements.forEach(el => {
     if (el.dataset.cursorBound) return;
     el.dataset.cursorBound = 'true';
@@ -1516,7 +1729,7 @@ const PROJECTS = [
     image:'images/proyectos/sensonica/portada.jpg',
     media:{
       cover:'portada.jpg',
-      video:[ M('video-H.mp4','H') ],
+      video:[ M('video_H.mp4','H') ],
       gif:[ M('gif0_H.gif','H'), M('gif1_V.gif','V') ],
       main:[ M('1_V.png','V'), M('2_V.jpeg','V') ],
       process:[ M('p.1_C.png','C'), M('p.2_V.jpeg','V'), M('p.3_V.jpeg','V') ]
@@ -1562,6 +1775,7 @@ const PROJECTS = [
       main:[ M('4_V.jpeg','V'), M('3_V.jpeg','V'), M('2_H.jpg','H'), M('1_H.png','H') ],
       process:[]
     },
+    filtersLink:{ url:'https://drive.google.com/drive/u/0/folders/1SUIurSYrSJvULb5bxX92DnnLRRc22yIt', label:'Ver todos los filtros en Google Drive →' },
     title:'ARCHIVO RETRO', label:'Hardware · 2025',
     color:'#ff8800', dark:'#4a2700', tags:['Electrónica','Fotografía','Firmware'], year:'2025',
     description:'Dispositivo electrónico inalámbrico que fusiona la fotografía digital con la estética de consolas clásicas.',
@@ -1612,7 +1826,8 @@ const PROJECTS = [
     longDescription:'Las Creaciones de placas para sintetizador consistieron en el desarrollo de secuenciadores electrónicos para un sintetizador grupal interactivo, cuyo funcionamiento depende de un reloj que coordina la emisión de sonidos a través de múltiples placas. El proceso técnico incluyó el diseño de circuitos en TinkerCAD y la gestión de fabricación de componentes desde China.',
     challenge:'Partir de un conocimiento nulo en electrónica y superar un riguroso proceso de prueba y error de hardware.',
     solution:'Se logró un sintetizador funcional capaz de oscilar y modular sonidos mediante la interacción con la luz, integrando con éxito la electrónica con el diseño industrial y sonoro.',
-    illustration:'sintetizador', role:'Diseñador · Ingeniero', link:null
+    illustration:'sintetizador', role:'Diseñador · Ingeniero',
+    link:{ url:'https://github.com/tomascatri/dis8644-2026-1/tree/main/examen/grupo-02', label:'Ver Repositorio de Desarrollo Github →' }
   },
   {
     id:'humboldt',
@@ -1705,7 +1920,6 @@ SKILLS.forEach(mod => {
 function cartridgeSVG(p){
   const id = 'cart-' + p.id;
   const pins = Array.from({length:9},(_,i)=>`<rect x="${14+i*7}" y="102" width="4" height="18" fill="#555555"/><rect x="${14+i*7}" y="102" width="1.5" height="18" fill="#cca300"/>`).join('');
-  const shortTitle = p.title.length > 14 ? p.title.slice(0,13) + '…' : p.title;
   return `
   <svg viewBox="0 0 90 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;" aria-hidden="true">
     <defs>
@@ -1727,7 +1941,6 @@ function cartridgeSVG(p){
     <!-- Bordes metálicos -->
     <rect x="6" y="14" width="78" height="68" fill="none" stroke="${p.color}" stroke-width="1.5" opacity="0.6"/>
     <rect x="6" y="82" width="78" height="14" fill="rgba(0,0,0,0.85)"/>
-    <text x="45" y="91" text-anchor="middle" font-size="6.5" fill="${p.color}" font-family="'Jersey 10',monospace" letter-spacing="0.3">${shortTitle}</text>
     
     <!-- Lector Inferior y Conectores de Cobre -->
     <rect x="10" y="95" width="70" height="30" fill="${p.dark}"/>
@@ -1746,12 +1959,38 @@ PROJECTS.forEach(p => {
   btn.className = 'cartridge-item reveal';
   btn.setAttribute('aria-label', `Ver proyecto ${p.title}`);
   btn.innerHTML = `
-    ${cartridgeSVG(p)}
+    <div class="cartridge-art">
+      ${cartridgeSVG(p)}
+      <div class="cart-label-overlay">
+        <p class="cart-title" style="color:${p.color};"><span>${p.title}</span></p>
+      </div>
+    </div>
     <div class="cartridge-name">
       <p class="tag">${p.tags[0]}</p>
     </div>`;
   btn.addEventListener('click', () => openProject(p, btn));
   grid.appendChild(btn);
+});
+
+// Si el título de un cartucho no cabe en su ancho, se activa un scroll automático
+// de ida y vuelta para poder leerlo completo sin necesidad de truncarlo con "...".
+function setupCartridgeMarquees(){
+  grid.querySelectorAll('.cart-title').forEach(el => {
+    const span = el.querySelector('span');
+    const overflow = span.scrollWidth - el.clientWidth;
+    if (overflow > 2){
+      el.style.setProperty('--marquee-dist', `-${overflow}px`);
+      el.classList.add('marquee');
+    } else {
+      el.style.removeProperty('--marquee-dist');
+      el.classList.remove('marquee');
+    }
+  });
+}
+requestAnimationFrame(setupCartridgeMarquees);
+window.addEventListener('resize', () => {
+  clearTimeout(window.__cartMarqueeResizeT);
+  window.__cartMarqueeResizeT = setTimeout(setupCartridgeMarquees, 200);
 });
 
 const view = document.getElementById('project-view');
@@ -1766,7 +2005,6 @@ function openProject(p, cartridgeEl){
 
     const header = `
       <div class="editorial-header">
-        <button class="back-btn" onclick="closeProject()">← REGRESAR A PROYECTOS</button>
         <h1 style="color:${p.color};" class="glitch-hover">${p.title}</h1>
         <div class="editorial-meta">
           <span>AÑO: ${p.year || 'S/I'}</span>
@@ -1793,10 +2031,51 @@ function openProject(p, cartridgeEl){
     document.body.style.overflow = 'hidden';
     view.classList.remove('crt-closing');
     view.classList.add('open', 'crt-opening');
-    updateCursorListeners();
+
+    const backBtn = document.getElementById('editorial-back-btn');
+    if (backBtn) backBtn.classList.add('visible');
+    buildEditorialIndex();
+
     view.scrollTo(0,0);
     initEditorialInteractivity();
+    initEditorialScrollStrips();
+    updateCursorListeners();
   }, 450);
+}
+
+/* ============ ÍNDICE DE SECCIONES DEL PROYECTO ============
+   Se arma dinámicamente según qué bloques existen realmente en el proyecto
+   abierto (portada, galería, video, proceso/filtros, cierre), para navegar
+   rápido sin tener que desplazarse a ciegas. */
+function buildEditorialIndex(){
+  const indexEl = document.getElementById('editorial-index');
+  if (!indexEl) return;
+
+  const candidates = [
+    { id: 'ed-sec-portada', label: 'PORTADA' },
+    { id: 'ed-sec-intro',   label: 'GALERÍA' },
+    { id: 'ed-sec-video',   label: 'VIDEO' },
+    { id: 'ed-sec-proceso', label: 'PROCESO' },
+    { id: 'ed-sec-cierre',  label: 'CIERRE' }
+  ].filter(s => document.getElementById(s.id));
+
+  if (candidates.length < 2){
+    indexEl.classList.remove('visible');
+    indexEl.innerHTML = '';
+    return;
+  }
+
+  indexEl.innerHTML = candidates.map(s =>
+    `<button type="button" data-jump="${s.id}">${s.label}</button>`
+  ).join('');
+  indexEl.classList.add('visible');
+
+  indexEl.querySelectorAll('button[data-jump]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.jump);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 }
 
 /* ============ SISTEMA DE MEDIA DINÁMICO POR PROYECTO ============ */
@@ -1816,14 +2095,22 @@ function mediaBlock(p, item, kind, extraClass){
   return `<div class="ed-media reveal ${oClass} ${isGif ? 'is-gif' : ''} ${extraClass||''}" data-kind="${dataKind}" data-src="${src}" data-label="${label}" style="--m-color:${p.color};border-color:${p.color}33;">${inner}</div>`;
 }
 
-/* Renderiza una tira horizontal de medios (usada para GIFs y para el Proceso) */
+/* Renderiza una tira horizontal de medios (usada para Filtros y para el Proceso).
+   Incluye una barra de desplazamiento propia (más grande y fácil de agarrar que la
+   nativa del navegador) que se desliza sola automáticamente; si el usuario la toca
+   o arrastra la tira, se detiene y retoma el auto-scroll a los pocos segundos. */
+let __edStripCounter = 0;
 function renderStrip(p, items, kind, labelText){
   if (!items || !items.length) return '';
+  const stripId = `ed-strip-${++__edStripCounter}`;
   return `
     <div class="ed-strip-wrap reveal">
       <span class="ed-strip-label" style="color:${p.color};">${labelText}</span>
-      <div class="ed-strip">
+      <div class="ed-strip" id="${stripId}" data-autoscroll>
         ${items.map(it => mediaBlock(p, it, kind)).join('')}
+      </div>
+      <div class="ed-scrollbar" data-scrollbar-for="${stripId}" style="--m-color:${p.color};">
+        <div class="ed-scrollbar-thumb"></div>
       </div>
     </div>
   `;
@@ -1838,7 +2125,7 @@ function renderProjectEditorial(p, tagsRow, linkBlock){
   const firstMain = mainItems.shift(); // se usa en la intro, el resto va al mosaico
 
   const hero = m.cover ? `
-    <div class="ed-hero reveal" style="--m-color:${p.color};">
+    <div class="ed-hero reveal" id="ed-sec-portada" style="--m-color:${p.color};">
       <img src="${mSrc(p, m.cover)}" alt="${p.title} — portada" onerror="this.parentElement.style.display='none';">
       <span class="ed-hero-kicker" style="color:${p.color};">${p.label}</span>
     </div>
@@ -1851,29 +2138,47 @@ function renderProjectEditorial(p, tagsRow, linkBlock){
   ` : '';
 
   const introRow = `
-    <div class="ed-intro-row">
+    <div class="ed-intro-row" id="ed-sec-intro">
       <p class="ed-body lead reveal">${p.longDescription}</p>
       ${firstMain ? mediaBlock(p, firstMain, 'image') : ''}
     </div>
   `;
 
-  const mosaic = mainItems.length ? `
-    <div class="ed-mosaic">
-      ${mainItems.map(it => mediaBlock(p, it, 'image')).join('')}
+  // El mosaico combina fotos y GIFs en un mismo bloque (los GIFs ya no son
+  // una sección aparte); cada GIF conserva su insignia "GIF" para distinguirse.
+  const mosaicSourceItems = [
+    ...mainItems.map(it => ({ item: it, kind: 'image' })),
+    ...((m.gif || []).map(it => ({ item: it, kind: 'gif' })))
+  ];
+  const mosaic = mosaicSourceItems.length ? `
+    <div class="ed-mosaic" id="ed-sec-galeria">
+      ${mosaicSourceItems.map(x => mediaBlock(p, x.item, x.kind)).join('')}
     </div>
   ` : '';
 
-  const featuredVideo = (m.video && m.video.length) ? m.video.map(v => `
-    <div class="reveal ed-featured-video o-${v.o || 'H'}">
-      ${mediaBlock(p, v, 'video')}
+  const featuredVideo = (m.video && m.video.length) ? `
+    <div id="ed-sec-video">
+      ${m.video.map(v => `
+        <div class="reveal ed-featured-video o-${v.o || 'H'}">
+          ${mediaBlock(p, v, 'video')}
+        </div>
+      `).join('')}
     </div>
-  `).join('') : '';
+  ` : '';
 
-  const gifStrip = renderStrip(p, m.gif, 'gif', 'LOOPS // GIF');
+  const filtersLinkBlock = p.filtersLink ? `
+    <div class="ed-strip-wrap reveal">
+      <span class="ed-strip-label" style="color:${p.color};">FILTROS DISPONIBLES</span>
+      <a href="${p.filtersLink.url}" target="_blank" rel="noopener" class="inline-block py-4 px-6 text-black font-pixel text-xl" style="background:${p.color};">
+        ${p.filtersLink.label}
+      </a>
+    </div>
+  ` : '';
   const processStrip = renderStrip(p, m.process, 'image', 'PROCESO');
+  const hasProcessSection = !!p.filtersLink || (m.process && m.process.length);
 
   const closing = `
-    <div class="ed-flow" style="gap:60px;">
+    <div class="ed-flow" id="ed-sec-cierre" style="gap:60px;">
       ${p.challenge ? `<div class="reveal"><h3 class="ed-label" style="color:${p.color};">EL DESAFÍO DIRECTO</h3><p class="ed-body">${p.challenge}</p></div>` : ''}
       ${p.solution ? `<div class="reveal"><h3 class="ed-label" style="color:${p.color};">SOLUCIÓN LOGRADA</h3><p class="ed-body">${p.solution}</p></div>` : ''}
       ${linkBlock}
@@ -1885,11 +2190,12 @@ function renderProjectEditorial(p, tagsRow, linkBlock){
       ${hero}
       ${tagsRow}
       ${logoBlock}
-      ${introRow}
-      ${mosaic}
-      ${featuredVideo}
-      ${gifStrip}
-      ${processStrip}
+      <div class="ed-gallery-group">
+        ${introRow}
+        ${mosaic}
+        ${featuredVideo}
+      </div>
+      ${hasProcessSection ? `<div class="ed-gallery-group" id="ed-sec-proceso">${filtersLinkBlock}${processStrip}</div>` : ''}
       ${closing}
     </div>
   `;
@@ -1923,10 +2229,136 @@ function initEditorialInteractivity(){
   });
 }
 
+/* ============ TIRAS CON AUTO-SCROLL Y BARRA PERSONALIZADA ============
+   Cada .ed-strip (Filtros / Proceso) se desliza sola de ida y vuelta.
+   Si el usuario interactúa (toca, arrastra la barra, usa la rueda), el
+   auto-scroll se pausa y vuelve a moverse solo tras unos segundos sin uso. */
+const AUTOSCROLL_SPEED_PX_S = 34;     // velocidad del desplazamiento automático
+const AUTOSCROLL_RESUME_MS  = 2600;   // segundos de inactividad antes de retomar
+let activeEditorialStrips = [];
+
+function initEditorialScrollStrips(){
+  stopAllEditorialScrollStrips();
+
+  viewContent.querySelectorAll('.ed-strip[data-autoscroll]').forEach(strip => {
+    const scrollbar = viewContent.querySelector(`.ed-scrollbar[data-scrollbar-for="${strip.id}"]`);
+    if (!scrollbar) return;
+    const thumb = scrollbar.querySelector('.ed-scrollbar-thumb');
+
+    const state = { strip, scrollbar, thumb, paused: false, resumeTimer: null, dragging: false, direction: 1, rafId: null, lastTs: null };
+
+    const syncThumb = () => {
+      const maxScroll = strip.scrollWidth - strip.clientWidth;
+      const trackWidth = scrollbar.clientWidth;
+      if (maxScroll <= 0){
+        thumb.style.width = '100%';
+        thumb.style.transform = 'translateX(0)';
+        return;
+      }
+      const thumbWidth = Math.max(48, (strip.clientWidth / strip.scrollWidth) * trackWidth);
+      const maxThumbX = trackWidth - thumbWidth;
+      const ratio = strip.scrollLeft / maxScroll;
+      thumb.style.width = `${thumbWidth}px`;
+      thumb.style.transform = `translateX(${ratio * maxThumbX}px)`;
+    };
+
+    const pause = () => {
+      state.paused = true;
+      clearTimeout(state.resumeTimer);
+      state.resumeTimer = setTimeout(() => { state.paused = false; state.lastTs = null; }, AUTOSCROLL_RESUME_MS);
+    };
+
+    // Arrastre de la barra (mouse + touch)
+    const onThumbDown = (clientX) => {
+      state.dragging = true;
+      thumb.classList.add('dragging');
+      pause();
+      const trackRect = scrollbar.getBoundingClientRect();
+      const maxScroll = strip.scrollWidth - strip.clientWidth;
+      const trackWidth = scrollbar.clientWidth;
+      const thumbWidth = thumb.getBoundingClientRect().width;
+      const maxThumbX = trackWidth - thumbWidth;
+
+      const move = (mx) => {
+        const rel = Math.min(Math.max(mx - trackRect.left - thumbWidth / 2, 0), maxThumbX);
+        const ratio = maxThumbX > 0 ? rel / maxThumbX : 0;
+        strip.scrollLeft = ratio * maxScroll;
+        syncThumb();
+      };
+      move(clientX);
+
+      const onMouseMove = (e) => { pause(); move(e.clientX); };
+      const onTouchMove = (e) => { pause(); move(e.touches[0].clientX); };
+      const stop = () => {
+        state.dragging = false;
+        thumb.classList.remove('dragging');
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', stop);
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', stop);
+      };
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', stop);
+      window.addEventListener('touchmove', onTouchMove, { passive: true });
+      window.addEventListener('touchend', stop);
+    };
+
+    thumb.addEventListener('mousedown', (e) => { e.preventDefault(); onThumbDown(e.clientX); });
+    thumb.addEventListener('touchstart', (e) => onThumbDown(e.touches[0].clientX), { passive: true });
+
+    // Click directo en la pista salta a esa posición
+    scrollbar.addEventListener('mousedown', (e) => {
+      if (e.target === thumb) return;
+      onThumbDown(e.clientX);
+    });
+
+    // Tocar/arrastrar la tira de imágenes, o usar la rueda, también pausa el auto-scroll
+    strip.addEventListener('mousedown', pause);
+    strip.addEventListener('touchstart', pause, { passive: true });
+    strip.addEventListener('wheel', pause, { passive: true });
+    strip.addEventListener('scroll', syncThumb, { passive: true });
+
+    // Bucle de auto-scroll: rebota de un extremo a otro
+    const step = (ts) => {
+      if (state.lastTs === null) state.lastTs = ts;
+      const dt = (ts - state.lastTs) / 1000;
+      state.lastTs = ts;
+      const maxScroll = strip.scrollWidth - strip.clientWidth;
+
+      if (!state.paused && !state.dragging && maxScroll > 0){
+        let next = strip.scrollLeft + state.direction * AUTOSCROLL_SPEED_PX_S * dt;
+        if (next >= maxScroll){ next = maxScroll; state.direction = -1; }
+        else if (next <= 0){ next = 0; state.direction = 1; }
+        strip.scrollLeft = next;
+        syncThumb();
+      }
+      state.rafId = requestAnimationFrame(step);
+    };
+
+    syncThumb();
+    state.rafId = requestAnimationFrame(step);
+    activeEditorialStrips.push(state);
+  });
+}
+
+function stopAllEditorialScrollStrips(){
+  activeEditorialStrips.forEach(state => {
+    if (state.rafId) cancelAnimationFrame(state.rafId);
+    clearTimeout(state.resumeTimer);
+  });
+  activeEditorialStrips = [];
+}
+
 function closeProject(){
   view.classList.remove('crt-opening');
   view.classList.add('crt-closing');
-  
+
+  const backBtn = document.getElementById('editorial-back-btn');
+  if (backBtn) backBtn.classList.remove('visible');
+  const indexEl = document.getElementById('editorial-index');
+  if (indexEl){ indexEl.classList.remove('visible'); indexEl.innerHTML = ''; }
+  stopAllEditorialScrollStrips();
+
   setTimeout(() => {
     view.classList.remove('open', 'crt-closing');
     document.body.style.overflow = '';
@@ -1937,47 +2369,123 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeProject();
 });
 
-/* ============ PROCESO DE COMUNICACIÓN GMAIL ============ */
+/* ============ CONFIGURACIÓN DE ENVÍO DE CORREO (EmailJS) ============
+   Para que "ENVIAR MENSAJE" mande el correo directamente sin abrir otra
+   pestaña, necesitas una cuenta GRATIS en https://www.emailjs.com/
+   (el plan free permite 200 envíos al mes). Pasos:
+     1. Crea una cuenta → "Email Services" → conecta tu Gmail → copia el SERVICE_ID.
+     2. "Email Templates" → crea uno con variables {{from_name}}, {{from_email}}
+        y {{message}} → copia el TEMPLATE_ID.
+     3. "Account" → "General" → copia tu "Public Key".
+     4. Pega los 3 valores abajo, entre las comillas.
+   Mientras estos campos estén vacíos, el formulario sigue funcionando
+   automáticamente con el método anterior (abrir Gmail en una pestaña),
+   así que nunca queda roto. */
+const EMAILJS_PUBLIC_KEY  = '';
+const EMAILJS_SERVICE_ID  = '';
+const EMAILJS_TEMPLATE_ID = '';
+
+if (window.emailjs && EMAILJS_PUBLIC_KEY) {
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+}
+
+/* ============ PROCESO DE COMUNICACIÓN ============ */
 function handleContactSubmit(event) {
   event.preventDefault();
-  
+
   const name = document.getElementById('form-name').value;
   const email = document.getElementById('form-email').value;
   const message = document.getElementById('form-message').value;
   const submitText = document.getElementById('btn-submit-text');
-  
+  const form = document.getElementById('contact-form');
+
   submitText.innerText = "PROCESANDO SEÑAL...";
   submitText.style.color = "var(--color-green)";
   submitText.style.borderColor = "var(--color-green)";
-  
-  setTimeout(() => {
-    submitText.innerText = "ENVIANDO A GMAIL...";
-    
+
+  const finishOk = (label) => {
+    submitText.innerText = label;
+    form.reset();
+    setTimeout(() => {
+      submitText.innerText = "ENVIAR MENSAJE";
+      submitText.style.color = "";
+      submitText.style.borderColor = "";
+    }, 3000);
+  };
+
+  const sendViaGmailTab = () => {
+    submitText.innerText = "ABRIENDO GMAIL...";
     const subject = encodeURIComponent(`Contacto Técnico Portafolio: ${name}`);
     const body = encodeURIComponent(
       `Hola Tomás,\n\nSoy ${name}.\n\nMensaje enviado desde tu consola de portafolio:\n"${message}"\n\nCorreo de contacto: ${email}`
     );
-    
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=tomascatrileo27@gmail.com&su=${subject}&body=${body}`;
     window.open(gmailUrl, '_blank');
-    
-    setTimeout(() => {
-      submitText.innerText = "¡CONEXIÓN ENVIADA!";
-      document.getElementById('contact-form').reset();
-      
-      setTimeout(() => {
-        submitText.innerText = "ENVIAR MENSAJE";
-        submitText.style.color = "";
-        submitText.style.borderColor = "";
-      }, 3000);
-    }, 1200);
-  }, 1000);
+    setTimeout(() => finishOk("¡CONEXIÓN ENVIADA!"), 800);
+  };
+
+  const emailjsReady = window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID;
+
+  setTimeout(() => {
+    if (emailjsReady) {
+      submitText.innerText = "ENVIANDO SEÑAL...";
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name: name,
+        from_email: email,
+        message: message,
+        to_email: 'tomascatrileo27@gmail.com'
+      }).then(() => finishOk("¡MENSAJE ENVIADO!"))
+        .catch((err) => {
+          console.error('EmailJS error:', err);
+          sendViaGmailTab();
+        });
+    } else {
+      sendViaGmailTab();
+    }
+  }, 900);
 }
 
-/* ============ INTERACCIÓN BOTÓN CV ============ */
+/* ============ COPIAR CORREO AL PORTAPAPELES ============ */
+function copyEmailToClipboard(){
+  const email = document.getElementById('email-copy-text').textContent.trim();
+  const btn = document.getElementById('email-copy-btn');
+  const originalText = 'COPIAR CORREO';
+
+  const showCopied = () => {
+    btn.textContent = '¡COPIADO!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.classList.remove('copied');
+    }, 2000);
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(email).then(showCopied).catch(() => {
+      fallbackCopyEmail(email, showCopied);
+    });
+  } else {
+    fallbackCopyEmail(email, showCopied);
+  }
+}
+function fallbackCopyEmail(email, onDone){
+  const temp = document.createElement('textarea');
+  temp.value = email;
+  temp.style.position = 'fixed';
+  temp.style.opacity = '0';
+  document.body.appendChild(temp);
+  temp.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(temp);
+  onDone();
+}
+
+/* ============ INTERACCIÓN BOTÓN CV ============
+   El botón apunta a un PDF real (cv/Tomas-Catrileo-CV.pdf) con el atributo
+   "download", así que el navegador descarga el archivo automáticamente;
+   aquí solo se agrega la animación visual sin bloquear esa descarga. */
 const cvBtn = document.getElementById('cv-btn');
-cvBtn.addEventListener('click', (e) => {
-  e.preventDefault();
+cvBtn.addEventListener('click', () => {
   const originalTxt = cvBtn.innerText;
   cvBtn.innerText = "COMPILANDO INFORMACIÓN...";
   cvBtn.style.backgroundColor = "var(--color-green)";
