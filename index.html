@@ -61,7 +61,11 @@
   cursor: none !important; /* Forzar cursor propio */
 }
 
-html{scroll-behavior:smooth;}
+html{
+  scroll-behavior:smooth;
+  overflow-x:hidden;
+  overscroll-behavior-x: none;
+}
 body{
   margin:0;
   background-color:#080808;
@@ -69,6 +73,7 @@ body{
   font-family:'Space Mono', monospace;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
+  overscroll-behavior-x: none;
   position: relative;
 }
 
@@ -1395,7 +1400,7 @@ body.site-impact{
   display:block;
   width:120px;
   height:auto;
-  animation: gatoEspacialSpinBob 2.4s ease-in-out infinite;
+  animation: gatoEspacialSpin 3s linear infinite;
   animation-play-state: paused;
   will-change: transform;
 }
@@ -1407,12 +1412,9 @@ body.site-impact{
   from{ transform: translateY(-50%) translateX(110vw); }
   to{ transform: translateY(-50%) translateX(-260px); }
 }
-@keyframes gatoEspacialSpinBob{
-  0%   { transform: translateY(0)     rotate(0deg); }
-  25%  { transform: translateY(-18px) rotate(90deg); }
-  50%  { transform: translateY(0)     rotate(180deg); }
-  75%  { transform: translateY(18px)  rotate(270deg); }
-  100% { transform: translateY(0)     rotate(360deg); }
+@keyframes gatoEspacialSpin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
 }
 
 /* ---------- Preferencia de Movimiento Reducido (pasada global) ---------- */
@@ -1473,17 +1475,22 @@ body.site-impact{
     top:0;
     right:0;
     height:100vh;
+    height:100dvh;
     width:min(78vw, 320px);
     margin:0;
     padding:96px 32px 32px;
     background:rgba(8,8,8,0.98);
     backdrop-filter:blur(10px);
     border-left:1px solid var(--color-border);
-    transform:translateX(100%);
+    -webkit-transform:translate3d(100%,0,0);
+    transform:translate3d(100%,0,0);
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
+    transition:-webkit-transform 0.3s cubic-bezier(0.16,1,0.3,1);
     transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
     z-index:150;
   }
-  .nav ul.is-open{ transform:translateX(0); }
+  .nav ul.is-open{ -webkit-transform:translate3d(0,0,0); transform:translate3d(0,0,0); }
   .nav ul li{ width:100%; }
   .nav ul a{ display:block; padding:16px 0; font-size: var(--title-2); }
   .nav-burger { display:flex; }
