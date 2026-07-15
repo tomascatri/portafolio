@@ -27,11 +27,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+10&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap">
 
-<!-- Tailwind CSS para base y estructura responsiva -->
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind CSS: build minificado y purgado (solo las clases usadas en este archivo) -->
+<link rel="stylesheet" href="styles.tailwind.css">
 
-<!-- EmailJS: permite enviar el formulario de contacto sin abrir otra pestaña (ver configuración al final del archivo) -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<!-- EmailJS se carga dinámicamente solo si el formulario está configurado (ver script al final del archivo) -->
 
 
 <style>
@@ -123,12 +122,12 @@ body{
   border: 3px solid var(--color-yellow);
   box-shadow: 0 0 15px var(--color-yellow);
 }
-#custom-cursor.is-pointer-hovering {
-  width: 24px;
-  height: 24px;
+#custom-cursor.is-text-hovering {
+  width: 2px;
+  height: 22px;
   background-color: var(--color-pink);
-  border-radius: 50%;
-  box-shadow: 0 0 12px var(--color-pink);
+  border-radius: 1px;
+  box-shadow: 0 0 6px var(--color-pink);
 }
 
 .cursor-particle {
@@ -271,6 +270,11 @@ section{
 }
 #intro-lock.unlocked{
   display:none;
+}
+html.intro-seen .hero-name-real .letter{
+  animation:none !important;
+  opacity:1 !important;
+  transform:none !important;
 }
 .hero-name{
   font-family:var(--font-pixel);
@@ -1371,8 +1375,117 @@ body.site-impact{
   to{ opacity: 1; transform: translateY(0); }
 }
 
+/* ---------- Gato Espacial (transición decorativa CV → agradecimientos) ---------- */
+.gato-espacial-section{
+  position:relative;
+  overflow:hidden;
+  height:180px;
+}
+.gato-espacial-wrap{
+  position:absolute;
+  top:50%;
+  left:0;
+  width:120px;
+  transform: translateY(-50%) translateX(110vw);
+  animation: gatoEspacialCross 9s linear infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+.gato-espacial{
+  display:block;
+  width:120px;
+  height:auto;
+  animation: gatoEspacialSpinBob 2.4s ease-in-out infinite;
+  animation-play-state: paused;
+  will-change: transform;
+}
+.gato-espacial-section.is-playing .gato-espacial-wrap,
+.gato-espacial-section.is-playing .gato-espacial{
+  animation-play-state: running;
+}
+@keyframes gatoEspacialCross{
+  from{ transform: translateY(-50%) translateX(110vw); }
+  to{ transform: translateY(-50%) translateX(-260px); }
+}
+@keyframes gatoEspacialSpinBob{
+  0%   { transform: translateY(0)     rotate(0deg); }
+  25%  { transform: translateY(-18px) rotate(90deg); }
+  50%  { transform: translateY(0)     rotate(180deg); }
+  75%  { transform: translateY(18px)  rotate(270deg); }
+  100% { transform: translateY(0)     rotate(360deg); }
+}
+
+/* ---------- Preferencia de Movimiento Reducido (pasada global) ---------- */
+@media (prefers-reduced-motion: reduce){
+  .hero-name-real .letter{ animation:none !important; opacity:1 !important; transform:none !important; }
+  .hero-name-stage.shake, .hero-name-stage.impact, .hero-name-stage.thud{ animation:none !important; }
+  .logo:hover, .glitch-hover:hover, .hero-name-stage.show-alt.is-hover .hero-name-alt{ animation:none !important; text-shadow:none !important; }
+  .reveal, .reveal-stagger > *{ animation:none !important; opacity:1 !important; transform:none !important; }
+  .crt-opening, .crt-closing{ animation:none !important; transition:opacity 0.2s ease !important; }
+  [class*="marquee"], .cartridge-marquee{ animation:none !important; }
+  #custom-cursor{ transition:none !important; }
+  .gato-espacial-section{ height:auto; padding:24px 0; }
+  .gato-espacial-wrap{ position:static !important; transform:none !important; animation:none !important; margin:0 auto; }
+  .gato-espacial{ animation:none !important; transform:none !important; margin:0 auto; }
+}
+
+/* ---------- Menú Mobile (Hamburguesa) ---------- */
+.nav-burger{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  width:40px;
+  height:40px;
+  background:transparent;
+  border:1px solid var(--color-border);
+  cursor:pointer;
+  padding:0;
+  z-index:200;
+}
+.nav-burger span{
+  display:block;
+  width:20px;
+  height:2px;
+  background:var(--color-yellow);
+  transition:transform 0.25s ease, opacity 0.2s ease;
+}
+.nav-burger.is-open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+.nav-burger.is-open span:nth-child(2){ opacity:0; }
+.nav-burger.is-open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+.nav-overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.5);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.25s ease;
+  z-index:140;
+}
+.nav-overlay.is-open{ opacity:1; pointer-events:auto; }
+
 @media (max-width: 900px){
-  .nav ul { display:none; }
+  .nav ul {
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    position:fixed;
+    top:0;
+    right:0;
+    height:100vh;
+    width:min(78vw, 320px);
+    margin:0;
+    padding:96px 32px 32px;
+    background:rgba(8,8,8,0.98);
+    backdrop-filter:blur(10px);
+    border-left:1px solid var(--color-border);
+    transform:translateX(100%);
+    transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
+    z-index:150;
+  }
+  .nav ul.is-open{ transform:translateX(0); }
+  .nav ul li{ width:100%; }
+  .nav ul a{ display:block; padding:16px 0; font-size: var(--title-2); }
   .nav-burger { display:flex; }
 }
 </style>
@@ -1389,7 +1502,7 @@ body.site-impact{
 <header class="nav">
   <a href="#inicio" class="logo">T-C</a>
   <nav class="flex items-center gap-6">
-    <ul>
+    <ul id="nav-links">
       <li><a href="#inicio" class="glitch-hover">Inicio</a></li>
       <li><a href="#sobre-mi" class="glitch-hover">Sobre mí</a></li>
       <li><a href="#habilidades" class="glitch-hover">Habilidades</a></li>
@@ -1397,7 +1510,11 @@ body.site-impact{
       <li><a href="#cv-section" class="glitch-hover">CV</a></li>
     </ul>
   </nav>
+  <button id="nav-burger" class="nav-burger" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="nav-links">
+    <span></span><span></span><span></span>
+  </button>
 </header>
+<div id="nav-overlay" class="nav-overlay"></div>
 
 <main>
 
@@ -1528,6 +1645,18 @@ body.site-impact{
     </div>
   </section>
 
+  <!-- GATO ESPACIAL: transición decorativa entre el CV y los agradecimientos -->
+  <section id="gato-espacial" class="gato-espacial-section" aria-hidden="true">
+    <div class="gato-espacial-wrap">
+      <svg class="gato-espacial" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 598 743" role="presentation">
+        <g>
+          <path d="M579.88,90.61v-36.25h-18.12v-18.12h-18.13v-18.12h-54.36V0h-108.73v18.12h-36.24v18.12h-18.12v18.12h-36.24v54.37h-18.12v108.73h18.12v36.24h-18.12v18.12h-18.12v36.25h-18.13v18.12h-18.12v36.24h-18.12v144.98h18.12v54.37h-18.12v36.24h-18.12v18.12h-90.61v-18.12h-18.12v-18.12h-18.12v-36.25h18.12v-18.12h18.12v18.12h36.25v-54.36h-18.12v-18.12H18.12v36.24H0v90.61h18.12v36.24h18.12v18.13h36.24v18.12h126.85v-18.12h18.12v-18.13h18.12v-18.12h36.25v36.25h18.12v18.12h18.12v18.12h18.12v18.12h18.12v18.12h18.12v18.13h36.24v-36.25h-18.12v-144.97h18.12v36.24h18.13v18.12h90.6v-36.24h-36.24v-90.61h-18.12v-18.12h-18.12v-54.37h-18.12v-36.24h36.24v54.36h36.24v-18.12h18.12v-54.37h-18.12v-18.12h-36.24v-18.12h54.36v-18.12h36.24v-18.12h18.13v-18.13h18.12v-36.24h18.12V90.61h-18.12ZM380.54,434.92h-18.12v18.12h-36.24v-18.12h-18.12v-36.24h-36.24v-36.25h18.12v18.13h18.12v18.12h18.12v36.24h36.24v-72.49h-18.12v-18.12h-18.12v-18.12h18.12v18.12h18.12v18.12h18.12v72.49ZM579.88,217.46h-18.12v36.24h-18.13v18.12h-18.12v18.13h-36.24v18.12h-54.36v18.12h-72.49v-18.12h-18.12v-18.12h-18.12v-18.13h-18.12v-72.48h-18.12v-72.49h18.12v-54.37h36.24v-18.12h18.12v-18.12h36.24v-18.12h72.49v18.12h54.36v18.12h18.12v18.12h18.13v36.25h18.12v108.73Z" fill="#ffe092"/>
+          <path d="M507.39,181.22v-36.25h-18.12v-18.12h-18.12v-18.12h-18.12v-18.12h-18.12v54.36h-36.25v-18.12h-18.12v-18.12h-18.12v-18.12h-18.12v72.48h-18.12v108.73h18.12v18.13h36.24v18.12h54.37v-18.12h54.36v-18.13h18.12v-18.12h18.12v-72.48h-18.12ZM380.54,181.22h18.12v36.24h-18.12v-36.24ZM453.03,253.7h-18.12v-18.12h-18.12v18.12h-18.13v-18.12h18.13v-18.12h18.12v18.12h18.12v18.12ZM471.15,217.46h-18.12v-36.24h18.12v36.24Z" fill="#ffe092"/>
+        </g>
+      </svg>
+    </div>
+  </section>
+
 </main>
 
 <footer class="border-t border-zinc-900 py-10 px-6 flex flex-col md:flex-row justify-between text-zinc-600 text-xs gap-4 max-w-7xl mx-auto">
@@ -1559,7 +1688,15 @@ body.site-impact{
 <script>
 /* ============ BLOQUEO DE INTERACCIÓN DURANTE LA ENTRADA DEL NOMBRE ============ */
 // Debe coincidir con el aterrizaje de la última letra (delay 0.67s + 58% de su caída de 0.5s).
-const INTRO_LOCK_MS = 1300;
+// En visitas repetidas dentro de la misma sesión, se salta la animación de entrada.
+const INTRO_SEEN_KEY = 'tc-intro-seen';
+const introAlreadySeen = sessionStorage.getItem(INTRO_SEEN_KEY) === '1';
+if (introAlreadySeen) document.documentElement.classList.add('intro-seen');
+try { sessionStorage.setItem(INTRO_SEEN_KEY, '1'); } catch (e) {}
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const skipIntroAnimation = prefersReducedMotion || introAlreadySeen;
+const INTRO_LOCK_MS = skipIntroAnimation ? 0 : 1300;
 const introLockEl = document.getElementById('intro-lock');
 let introLocked = true;
 
@@ -1576,6 +1713,7 @@ setTimeout(() => {
 // Temblor con cada letra que aterriza: cada bloque hace vibrar la escena al caer,
 // y la última letra remata con un temblor más fuerte, como el golpe final.
 (() => {
+  if (skipIntroAnimation) return;
   const FALL_DURATION_MS = 500;
   const LANDING_FRACTION = 0.58; // momento del keyframe en que la letra "toca el suelo"
   const letterEls = document.querySelectorAll('.hero-name-real .letter');
@@ -1618,7 +1756,7 @@ let lastX = 0, lastY = 0;
 /* ============ TEMBLOR DE "ENCENDIDO DE MONITOR" ============ */
 let shakeCooldown = false;
 function triggerMonitorShake() {
-  if (!heroNameStage || shakeCooldown || introLocked) return;
+  if (!heroNameStage || shakeCooldown || introLocked || prefersReducedMotion) return;
   shakeCooldown = true;
   heroNameStage.classList.remove('shake');
   void heroNameStage.offsetWidth; // fuerza reflow para poder repetir la animación
@@ -1643,10 +1781,22 @@ if (heroNameStage) {
   }
 }
 
+let rafPending = false;
 document.addEventListener('mousemove', (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
+  if (rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(() => {
+    rafPending = false;
+    updateCursorFrame();
+  });
+});
+
+function updateCursorFrame(){
   cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+
+  if (prefersReducedMotion) return;
 
   // Efecto de movimiento sutil para el Grid del Fondo (Hero Paralaje)
   const heroGrid = document.querySelector('.grid-bg');
@@ -1673,11 +1823,15 @@ document.addEventListener('mousemove', (e) => {
     lastX = mouseX;
     lastY = mouseY;
   }
-});
+}
 
-// Estela de píxeles desvanecientes
+// Estela de píxeles desvanecientes (con tope de partículas vivas para no acumular nodos DOM)
+const MAX_CURSOR_PARTICLES = 15;
+let activeCursorParticles = 0;
 function createCursorParticle(x, y) {
-  if (window.innerWidth < 1024) return;
+  if (window.innerWidth < 1024 || prefersReducedMotion) return;
+  if (activeCursorParticles >= MAX_CURSOR_PARTICLES) return;
+  activeCursorParticles++;
   const particle = document.createElement('div');
   particle.className = 'cursor-particle';
   particle.style.left = x + 'px';
@@ -1687,6 +1841,7 @@ function createCursorParticle(x, y) {
   // Limpieza rápida
   setTimeout(() => {
     particle.remove();
+    activeCursorParticles--;
   }, 600);
 }
 
@@ -1700,11 +1855,11 @@ function updateCursorListeners() {
     const isTextField = el.tagName === 'INPUT' || el.tagName === 'TEXTAREA';
 
     el.addEventListener('mouseenter', () => {
-      cursor.classList.add(isTextField ? 'is-pointer-hovering' : 'is-hovering');
+      cursor.classList.add(isTextField ? 'is-text-hovering' : 'is-hovering');
     });
     
     el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('is-hovering', 'is-pointer-hovering');
+      cursor.classList.remove('is-hovering', 'is-text-hovering');
     });
   });
 }
@@ -2170,7 +2325,7 @@ function mediaBlock(p, item, kind, extraClass){
   const dataKind = kind === 'video' ? 'video' : 'img';
   const label = `${kind.toUpperCase()} — ${p.id}/${item.file}`;
   const inner = kind === 'video'
-    ? `<video src="${src}" controls playsinline muted loop onerror="this.parentElement.classList.add('video-missing'); this.remove();"></video>`
+    ? `<video src="${src}" controls playsinline muted loop preload="none" onerror="this.parentElement.classList.add('video-missing'); this.remove();"></video>`
     : `<img src="${src}" alt="${p.title} — ${item.file}" loading="lazy" onerror="this.parentElement.classList.add('img-missing'); this.remove();">`;
   const noCropClass = p.noCrop ? 'no-crop' : '';
   return `<div class="ed-media reveal ${oClass} ${isGif ? 'is-gif' : ''} ${noCropClass} ${extraClass||''}" data-kind="${dataKind}" data-src="${src}" data-label="${label}" style="--m-color:${p.color};border-color:${p.color}33;">${inner}</div>`;
@@ -2450,9 +2605,22 @@ const EMAILJS_PUBLIC_KEY  = '';
 const EMAILJS_SERVICE_ID  = '';
 const EMAILJS_TEMPLATE_ID = '';
 
-if (window.emailjs && EMAILJS_PUBLIC_KEY) {
-  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+function loadEmailJsScript(){
+  return new Promise((resolve, reject) => {
+    if (window.emailjs) { resolve(window.emailjs); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    script.onload = () => resolve(window.emailjs);
+    script.onerror = () => reject(new Error('No se pudo cargar EmailJS'));
+    document.head.appendChild(script);
+  });
 }
+
+// Solo se descarga el SDK de EmailJS (y solo se inicializa) si el formulario está configurado;
+// si las 3 claves están vacías, nunca se pide el script y se usa directo el fallback de Gmail.
+const emailjsLoadPromise = (EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)
+  ? loadEmailJsScript().then(ejs => { ejs.init({ publicKey: EMAILJS_PUBLIC_KEY }); return ejs; })
+  : null;
 
 /* ============ PROCESO DE COMUNICACIÓN ============ */
 function handleContactSubmit(event) {
@@ -2478,6 +2646,17 @@ function handleContactSubmit(event) {
     }, 3000);
   };
 
+  const finishError = (label) => {
+    submitText.innerText = label;
+    submitText.style.color = "var(--color-red)";
+    submitText.style.borderColor = "var(--color-red)";
+    setTimeout(() => {
+      submitText.innerText = "ENVIAR MENSAJE";
+      submitText.style.color = "";
+      submitText.style.borderColor = "";
+    }, 4500);
+  };
+
   const sendViaGmailTab = () => {
     submitText.innerText = "ABRIENDO GMAIL...";
     const subject = encodeURIComponent(`Contacto Técnico Portafolio: ${name}`);
@@ -2485,21 +2664,25 @@ function handleContactSubmit(event) {
       `Hola Tomás,\n\nSoy ${name}.\n\nMensaje enviado desde tu consola de portafolio:\n"${message}"\n\nCorreo de contacto: ${email}`
     );
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=tomascatrileo27@gmail.com&su=${subject}&body=${body}`;
-    window.open(gmailUrl, '_blank');
+    const popup = window.open(gmailUrl, '_blank');
+    if (!popup) {
+      finishError("NO SE PUDO ENVIAR · ESCRIBE A tomascatrileo27@gmail.com");
+      return;
+    }
     setTimeout(() => finishOk("¡CONEXIÓN ENVIADA!"), 800);
   };
 
-  const emailjsReady = window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID;
-
   setTimeout(() => {
-    if (emailjsReady) {
+    if (emailjsLoadPromise) {
       submitText.innerText = "ENVIANDO SEÑAL...";
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        from_name: name,
-        from_email: email,
-        message: message,
-        to_email: 'tomascatrileo27@gmail.com'
-      }).then(() => finishOk("¡MENSAJE ENVIADO!"))
+      emailjsLoadPromise
+        .then(ejs => ejs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          from_name: name,
+          from_email: email,
+          message: message,
+          to_email: 'tomascatrileo27@gmail.com'
+        }))
+        .then(() => finishOk("¡MENSAJE ENVIADO!"))
         .catch((err) => {
           console.error('EmailJS error:', err);
           sendViaGmailTab();
@@ -2584,6 +2767,49 @@ if ('IntersectionObserver' in window) {
 } else {
   revealTargets.forEach(el => el.classList.add('in-view'));
 }
+
+/* ============ GATO ESPACIAL: anima solo mientras la sección está visible ============ */
+(() => {
+  const gatoSection = document.getElementById('gato-espacial');
+  if (!gatoSection || prefersReducedMotion || !('IntersectionObserver' in window)) return;
+  const gatoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      gatoSection.classList.toggle('is-playing', entry.isIntersecting);
+    });
+  }, { threshold: 0.01 });
+  gatoObserver.observe(gatoSection);
+})();
+
+/* ============ MENÚ MOBILE (HAMBURGUESA) ============ */
+(function initMobileNav(){
+  const burger = document.getElementById('nav-burger');
+  const links = document.getElementById('nav-links');
+  const overlay = document.getElementById('nav-overlay');
+  if (!burger || !links || !overlay) return;
+
+  function openNav(){
+    burger.classList.add('is-open');
+    links.classList.add('is-open');
+    overlay.classList.add('is-open');
+    burger.setAttribute('aria-expanded', 'true');
+    burger.setAttribute('aria-label', 'Cerrar menú de navegación');
+  }
+  function closeNav(){
+    burger.classList.remove('is-open');
+    links.classList.remove('is-open');
+    overlay.classList.remove('is-open');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.setAttribute('aria-label', 'Abrir menú de navegación');
+  }
+  burger.addEventListener('click', () => {
+    links.classList.contains('is-open') ? closeNav() : openNav();
+  });
+  overlay.addEventListener('click', closeNav);
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && links.classList.contains('is-open')) closeNav();
+  });
+})();
 
 window.onload = function() {
   updateCursorListeners();
